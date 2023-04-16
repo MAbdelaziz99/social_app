@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_app/presentation/register/register_screen.dart';
 import 'package:social_app/presentation/splash/splash_screen.dart';
 import 'package:social_app/router/router_const.dart';
 
@@ -16,6 +17,10 @@ class AppRouter {
       case loginScreen:
         return MaterialPageRoute(
           builder: (context) => LoginScreen(),
+        );
+      case registerScreen:
+        return MaterialPageRoute(
+          builder: (context) => RegisterScreen(),
         );
     }
     return null;

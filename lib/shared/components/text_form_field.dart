@@ -6,15 +6,19 @@ class DefaultTextFormField extends StatelessWidget {
   final String hintText;
   final IconData prefixIcon;
   final IconData? suffixIcon;
+  final VoidCallback? onSuffixIcon;
   final bool? obscureText;
-  final String? Function(String? value) validator;
+  final String errorMsg;
+  final TextInputType keyboardType;
 
   const DefaultTextFormField({Key? key,
     required this.controller,
     required this.hintText,
     required this.prefixIcon,
     this.obscureText,
-    required this.validator,
+    required this.errorMsg,
+    required this.keyboardType,
+    this.onSuffixIcon,
     this.suffixIcon,})
       : super(key: key);
 
@@ -24,6 +28,7 @@ class DefaultTextFormField extends StatelessWidget {
       height: 40.0.h,
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType ,
         decoration: InputDecoration(
           border:
           OutlineInputBorder(borderRadius: BorderRadius
@@ -36,11 +41,16 @@ class DefaultTextFormField extends StatelessWidget {
             ),
           ),
           prefixIcon: Icon(prefixIcon),
-          suffixIcon: Icon(suffixIcon),
+          suffixIcon: IconButton(icon: Icon(suffixIcon), onPressed: onSuffixIcon,),
         ),
         maxLines: 1,
         obscureText: obscureText??false,
-        validator: validator,
+        validator: (value) {
+          if(value == null || value.isEmpty){
+            return errorMsg;
+          }
+          return null;
+        },
       ),
     );
   }
