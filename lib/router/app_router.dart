@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_app/presentation/home/home_screen.dart';
 import 'package:social_app/presentation/register/register_screen.dart';
 import 'package:social_app/presentation/splash/splash_screen.dart';
 import 'package:social_app/router/router_const.dart';
@@ -21,6 +22,10 @@ class AppRouter {
       case registerScreen:
         return MaterialPageRoute(
           builder: (context) => RegisterScreen(),
+        );
+      case homeScreen:
+        return MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
         );
     }
     return null;

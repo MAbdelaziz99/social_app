@@ -2,12 +2,14 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:social_app/presentation/register/cubit/register_cubit.dart';
 import 'package:social_app/presentation/register/cubit/register_states.dart';
 import 'package:social_app/shared/components/material_button.dart';
 import 'package:social_app/shared/components/size_between_components.dart';
 import 'package:social_app/shared/components/snackbar.dart';
+import 'package:social_app/shared/components/spin_kit.dart';
 import 'package:social_app/shared/components/text_form_field.dart';
 import 'package:social_app/shared/style/colors.dart';
 
@@ -64,7 +66,9 @@ class RegisterScreen extends StatelessWidget {
                           child: IconButton(
                             onPressed: () {
                               // pick gallery or camera to put photo
-                              cubit.showImagePickerDialog(context: context);
+                              if(state is !RegisterLoadingState) {
+                                cubit.showImagePickerDialog(context: context);
+                              }
                             },
                             icon: Icon(
                               Icons.camera_alt,
@@ -94,18 +98,25 @@ class RegisterScreen extends StatelessWidget {
                               value: 'Male',
                               groupValue: cubit.gender,
                               onChanged: (value) {
-                                cubit.changeGender(gender: value);
+                                if(state is !RegisterLoadingState) {
+                                  cubit.changeGender(gender: value);
+                                }
                               },
                             ),
                           ),
                         ),
                         Expanded(
                           child: RadioListTile(
-                            title: Text("Female"),
+                            title: Text(
+                              "Female",
+                              style: TextStyle(fontSize: 16.0.sp),
+                            ),
                             value: 'Female',
                             groupValue: cubit.gender,
                             onChanged: (value) {
-                              cubit.changeGender(gender: value);
+                              if(state is !RegisterLoadingState) {
+                                cubit.changeGender(gender: value);
+                              }
                             },
                           ),
                         ),
@@ -156,24 +167,19 @@ class RegisterScreen extends StatelessWidget {
                             builder: (context) => DefaultButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    if (cubit.image == null) {
-                                      defaultErrorSnackBar(
-                                          message: "Pick image",
-                                          context: context);
-                                    } else {
-                                      // account creation
-                                      cubit.registerAccount(
-                                          context: context,
-                                          email: _emailController.text,
-                                          password: _passwordController.text,
-                                          userName: _userNameController.text,
-                                          phone: _phoneController.text);
-                                    }
+                                    // account creation
+
+                                    cubit.registerAccount(
+                                        context: context,
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                        userName: _userNameController.text,
+                                        phone: _phoneController.text);
                                   }
                                 },
                                 text: 'Register'),
-                            fallback: (context) => const Center(
-                              child: CircularProgressIndicator(),
+                            fallback: (context) =>  Center(
+                              child: DefaultSpinKit(),
                             ),
                           ),
                         ],

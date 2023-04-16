@@ -9,25 +9,29 @@ import 'package:social_app/shared/components/snackbar.dart';
 import 'package:uuid/uuid.dart';
 
 class AccountCreation {
-  static AccountCreation registerAuth = AccountCreation();
+  static AccountCreation instance = AccountCreation();
 
-  static AccountCreation getInstance() => registerAuth;
+  static AccountCreation getInstance() => instance;
 
   registerAccount({required context,
     required email,
     required password,
     required UserModel userModel,
-    required File profileImage,
+    required File? profileImage,
     required Function(void) onSuccessAccountCreation,
-    required Function onErrorListen}) {
+    required Function(void) onErrorAccountCreation,
+    required Function onErrorAuthListen}) {
     FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password)
         .then((value) {
           userModel.uid = value.user!.uid;
-      uploadUserPhotoToFirebaseStorage(profileImage: profileImage, onSuccessAccountCreation: onSuccessAccountCreation);
+          profileImage == null ?
+              insertUserDataToFirebase(onSuccessAccountCreation: onSuccessAccountCreation, onErrorAccountCreation: onErrorAccountCreation)
+              :
+      uploadUserPhotoToFirebaseStorage(profileImage: profileImage, onSuccessAccountCreation: onSuccessAccountCreation, onErrorAccountCreation: onErrorAccountCreation);
     }).catchError((error) {
       isEmailAddressAlreadyExistToShowError(context: context, email: email);
-      onErrorListen();
+      onErrorAuthListen();
     });
   }
 
@@ -48,7 +52,7 @@ class AccountCreation {
     });
   }
 
-  uploadUserPhotoToFirebaseStorage({required File profileImage, required Function(void) onSuccessAccountCreation})
+  uploadUserPhotoToFirebaseStorage({required File profileImage, required Function(void) onSuccessAccountCreation, required Function onErrorAccountCreation})
   {
     var uniqueId = const Uuid().v4();
     Reference ref = FirebaseStorage.instance
@@ -56,7 +60,6 @@ class AccountCreation {
         .child('${FirebaseAuth.instance.currentUser?.uid}&$uniqueId');
     ref.putFile(profileImage).snapshotEvents.listen((TaskSnapshot event) {
       switch(event.state){
-
         case TaskState.paused:
           // TODO: Handle this case.
           break;
@@ -66,20 +69,20 @@ class AccountCreation {
         case TaskState.success:
           ref.getDownloadURL().then((photoUrl){
             userModel?.photo = photoUrl;
-            insertUserDataToFirebase(onSuccessAccountCreation: onSuccessAccountCreation);
+            insertUserDataToFirebase(onSuccessAccountCreation: onSuccessAccountCreation, onErrorAccountCreation: onErrorAccountCreation);
           });
           break;
         case TaskState.canceled:
-          // TODO: Handle this case.
+          onErrorAccountCreation();
           break;
         case TaskState.error:
-          // TODO: Handle this case.
+          onErrorAccountCreation();
           break;
       }
     });
   }
 
-  insertUserDataToFirebase({required Function(void) onSuccessAccountCreation}) {
-    FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).set(userModel!.toMap()).then(onSuccessAccountCreation).catchError((error) {});
+  insertUserDataToFirebase({required Function(void) onSuccessAccountCreation, required Function onErrorAccountCreation}) {
+    FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).set(userModel!.toMap()).then(onSuccessAccountCreation).catchError(onErrorAccountCreation);
   }
 }
