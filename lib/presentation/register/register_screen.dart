@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +7,7 @@ import 'package:social_app/presentation/register/cubit/register_cubit.dart';
 import 'package:social_app/presentation/register/cubit/register_states.dart';
 import 'package:social_app/shared/components/material_button.dart';
 import 'package:social_app/shared/components/size_between_components.dart';
+import 'package:social_app/shared/components/snackbar.dart';
 import 'package:social_app/shared/components/text_form_field.dart';
 import 'package:social_app/shared/style/colors.dart';
 
@@ -13,7 +15,6 @@ class RegisterScreen extends StatelessWidget {
   final _userNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -45,17 +46,18 @@ class RegisterScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 80.0).r,
                     child: Stack(
                       children: [
-                        cubit.image == null ?
-                        CircleAvatar(
-                          radius: 60.r,
-                          child: Icon(
-                            Icons.person,
-                            size: 60.0.r,
-                          ),
-                        ) : CircleAvatar(
-                          radius: 60.r,
-                          backgroundImage: FileImage(cubit.image!),
-                        ) ,
+                        cubit.image == null
+                            ? CircleAvatar(
+                                radius: 60.r,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 60.0.r,
+                                ),
+                              )
+                            : CircleAvatar(
+                                radius: 60.r,
+                                backgroundImage: FileImage(cubit.image!),
+                              ),
                         Positioned(
                           bottom: -1.h,
                           right: -1.w,
@@ -76,6 +78,39 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 50.0.h,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0).r,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            width: 100.0.w,
+                            child: RadioListTile(
+                              title: Text(
+                                "Male",
+                                style: TextStyle(fontSize: 16.0.sp),
+                              ),
+                              value: 'Male',
+                              groupValue: cubit.gender,
+                              onChanged: (value) {
+                                cubit.changeGender(gender: value);
+                              },
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: RadioListTile(
+                            title: Text("Female"),
+                            value: 'Female',
+                            groupValue: cubit.gender,
+                            onChanged: (value) {
+                              cubit.changeGender(gender: value);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Form(
                     key: _formKey,
@@ -112,35 +147,35 @@ class RegisterScreen extends StatelessWidget {
                               suffixIcon: cubit.isPasswordShown
                                   ? Icons.visibility_off_rounded
                                   : Icons.visibility_rounded,
-                              onSuffixIcon: () =>
-                                  cubit.showPassword(),
-                              obscureText: cubit.isPasswordShown
-                                  ? false
-                                  : true,
+                              onSuffixIcon: () => cubit.showPassword(),
+                              obscureText: cubit.isPasswordShown ? false : true,
                               keyboardType: TextInputType.visiblePassword),
                           sizeBetweenTextFields(),
-                          DefaultTextFormField(
-                              controller: _confirmPasswordController,
-                              hintText: 'Password confirmation',
-                              prefixIcon: Icons.lock,
-                              suffixIcon: cubit.isPasswordConfirmationShown
-                                  ? Icons.visibility_off_rounded
-                                  : Icons.visibility_rounded,
-                              onSuffixIcon: () =>
-                                  cubit.showPasswordConfirmation(),
-                              obscureText: cubit.isPasswordConfirmationShown
-                                  ? false
-                                  : true,
-                              errorMsg: 'Please confirm your password',
-                              keyboardType: TextInputType.visiblePassword),
-                          sizeBetweenTextFields(),
-                          DefaultButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // account creation
-                                }
-                              },
-                              text: 'Register'),
+                          ConditionalBuilder(
+                            condition: state is! RegisterLoadingState,
+                            builder: (context) => DefaultButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (cubit.image == null) {
+                                      defaultErrorSnackBar(
+                                          message: "Pick image",
+                                          context: context);
+                                    } else {
+                                      // account creation
+                                      cubit.registerAccount(
+                                          context: context,
+                                          email: _emailController.text,
+                                          password: _passwordController.text,
+                                          userName: _userNameController.text,
+                                          phone: _phoneController.text);
+                                    }
+                                  }
+                                },
+                                text: 'Register'),
+                            fallback: (context) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
                         ],
                       ),
                     ),
