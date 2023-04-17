@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_app/bloc_observer.dart';
+import 'package:social_app/presentation/home/cubit/home_cubit.dart';
 import 'package:social_app/presentation/login/cubit/login_cubit.dart';
 import 'package:social_app/presentation/register/cubit/register_cubit.dart';
 import 'package:social_app/presentation/splash/splash_screen.dart';
@@ -40,16 +41,20 @@ class MyApp extends StatelessWidget {
           BlocProvider<LoginCubit>(
             create: (context) => LoginCubit(),
           ),
+          BlocProvider<HomeCubit>(
+            create: (context) => HomeCubit()..getUser(),
+          ),
         ],
         child: MaterialApp(
           home: const SplashScreen(),
           theme: ThemeData(
-            appBarTheme: const AppBarTheme(
+            appBarTheme: AppBarTheme(
               backgroundColor: Colors.white,
               elevation: 1.0,
               centerTitle: true,
-              iconTheme: IconThemeData(color: darkGreyColor),
-              actionsIconTheme: IconThemeData(color: darkGreyColor),
+              titleTextStyle: TextStyle(fontSize: 25.0.sp, color: darkGreyColor),
+              iconTheme: const IconThemeData(color: darkGreyColor),
+              actionsIconTheme: const IconThemeData(color: darkGreyColor),
             ),
           ),
           debugShowCheckedModeBanner: false,

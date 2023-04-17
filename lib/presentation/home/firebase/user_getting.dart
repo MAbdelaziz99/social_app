@@ -3,12 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:social_app/data/data.dart';
 import 'package:social_app/data/models/user_model.dart';
 
-class LoginUserInfoGetting {
-  static LoginUserInfoGetting instance = LoginUserInfoGetting();
+class HomeUserGetting {
+  static HomeUserGetting instance = HomeUserGetting();
 
-  static LoginUserInfoGetting getInstance() => instance;
+  static HomeUserGetting getInstance() => instance;
 
-  getUser({required Function onLoginSuccessListen}) {
+  getUser({required Function onGetUserListen}) {
     FirebaseFirestore.instance
         .collection('Users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
@@ -17,8 +17,7 @@ class LoginUserInfoGetting {
           if(event.data() != null) {
             userModel = UserModel.fromJson(event.data());
           }
-          print('Photo :: ${userModel?.photo}');
-          onLoginSuccessListen();
+          onGetUserListen();
     });
   }
 }
