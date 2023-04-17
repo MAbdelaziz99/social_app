@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_app/bloc_observer.dart';
+import 'package:social_app/presentation/login/cubit/login_cubit.dart';
 import 'package:social_app/presentation/register/cubit/register_cubit.dart';
 import 'package:social_app/presentation/splash/splash_screen.dart';
 import 'package:social_app/router/app_router.dart';
@@ -33,8 +34,11 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) => MultiBlocProvider(
         providers: [
-          BlocProvider(
+          BlocProvider<RegisterCubit>(
             create: (context) => RegisterCubit(),
+          ),
+          BlocProvider<LoginCubit>(
+            create: (context) => LoginCubit(),
           ),
         ],
         child: MaterialApp(

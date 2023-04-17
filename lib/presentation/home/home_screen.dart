@@ -10,8 +10,13 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       backgroundColor: Colors.white,
+      bottomNavigationBar: BottomNavigationBar(
+        items: [],
+        currentIndex: 0,
+        type: BottomNavigationBarType.fixed,
+        elevation: 3.0,
+      ),
       body: Center(
         child: DefaultButton(
           text: 'Log out',

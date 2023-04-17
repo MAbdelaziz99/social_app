@@ -25,7 +25,7 @@ class DefaultTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.0.h,
+      height: 60.0.h,
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType ,
@@ -34,16 +34,15 @@ class DefaultTextFormField extends StatelessWidget {
           OutlineInputBorder(borderRadius: BorderRadius
               .circular(10.0)
               .r),
-          label: Text(
-            hintText,
-            style: TextStyle(
-              fontSize: 16.0.sp,
-            ),
+          hintText: hintText,
+          hintStyle: TextStyle(
+            fontSize: 16.0.sp,
           ),
           prefixIcon: Icon(prefixIcon),
           suffixIcon: IconButton(icon: Icon(suffixIcon), onPressed: onSuffixIcon,),
         ),
         maxLines: 1,
+        textAlign: TextAlign.start,
         obscureText: obscureText??false,
         validator: (value) {
           if(value == null || value.isEmpty){

@@ -9,3 +9,9 @@ class LoginLoadingState extends LoginStates{}
 class LoginSuccessState extends LoginStates{}
 
 class LoginErrorState extends LoginStates{}
+
+class LoginResetPasswordLoadingState extends LoginStates{}
+
+class LoginResetPasswordSuccessState extends LoginStates{}
+
+class LoginResetPasswordErrorState extends LoginStates{}
