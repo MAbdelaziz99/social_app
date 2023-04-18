@@ -27,7 +27,15 @@ class RegisterCubit extends Cubit<RegisterStates> {
 
   showImagePickerDialog({required context}) {
     showDialog(
-        context: context, builder: (context) => const PhotoPickerDialog());
+        context: context,
+        builder: (context) => ImagePickerDialog(
+              onGalleryPressed: () {
+                pickPhoto(isCamera: false, context: context);
+              },
+              onCameraPressed: () {
+                pickPhoto(isCamera: true, context: context);
+              },
+            ));
   }
 
   File? image;

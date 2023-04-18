@@ -6,8 +6,13 @@ import 'package:social_app/shared/components/title_dialog.dart';
 import 'package:social_app/shared/style/colors.dart';
 import '../../presentation/register/cubit/register_states.dart';
 
-class PhotoPickerDialog extends StatelessWidget {
-  const PhotoPickerDialog({Key? key}) : super(key: key);
+class ImagePickerDialog extends StatelessWidget {
+  final Function() onGalleryPressed;
+  final Function() onCameraPressed;
+
+  const ImagePickerDialog(
+      {Key? key, required this.onGalleryPressed, required this.onCameraPressed})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +34,14 @@ class PhotoPickerDialog extends StatelessWidget {
                 SizedBox(
                     width: double.infinity,
                     child: DefaultTextButton(
-                      onPressed: ()
-                      {
-                        RegisterCubit.get(context).pickPhoto(isCamera: false, context: context);
-                      },
+                      onPressed: onGalleryPressed,
                       text: 'Gallery',
                       textColor: darkGreyColor,
                     )),
                 SizedBox(
                     width: double.infinity,
                     child: DefaultTextButton(
-                      onPressed: () {
-                        RegisterCubit.get(context).pickPhoto(isCamera: true, context: context);
-                      },
+                      onPressed: onCameraPressed,
                       text: 'Camera',
                       textColor: darkGreyColor,
                     )),
