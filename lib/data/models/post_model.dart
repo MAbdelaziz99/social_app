@@ -1,5 +1,10 @@
+import 'package:social_app/data/models/user_model.dart';
+
 class PostModel {
   String? postId, postText, postTime, userId;
+  int? postLikes, postComments;
+  UserModel? userModel;
+  bool isLiked = false;
   List<dynamic> images = [];
 
   PostModel({

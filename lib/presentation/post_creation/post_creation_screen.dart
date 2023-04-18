@@ -7,8 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:social_app/data/data.dart';
-import 'package:social_app/presentation/post_creation/cubit/post_cubit.dart';
-import 'package:social_app/presentation/post_creation/cubit/post_states.dart';
+import 'package:social_app/presentation/post_creation/cubit/post_creation_cubit.dart';
+import 'package:social_app/presentation/post_creation/cubit/post_creation_states.dart';
 import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/text_button.dart';
 import 'package:social_app/shared/constatnts.dart';
@@ -22,12 +22,12 @@ class PostCreationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<PostCubit>(
-      create: (context) => PostCubit(),
-      child: BlocConsumer<PostCubit, PostStates>(
+    return BlocProvider<PostCreationCubit>(
+      create: (context) => PostCreationCubit(),
+      child: BlocConsumer<PostCreationCubit, PostCreationStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          PostCubit postCubit = PostCubit.get(context);
+          PostCreationCubit postCubit = PostCreationCubit.get(context);
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -62,7 +62,7 @@ class PostCreationScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      if (state is PostLoadingState)
+                      if (state is PostCreationLoadingState)
                         LinearProgressIndicator(minHeight: 1.3.h),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0).r,
@@ -123,7 +123,7 @@ class PostCreationScreen extends StatelessWidget {
     );
   }
 
-  Widget withoutImageWidget({required context, required PostCubit cubit}) =>
+  Widget withoutImageWidget({required context, required PostCreationCubit cubit}) =>
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +154,7 @@ class PostCreationScreen extends StatelessWidget {
         ),
       );
 
-  Widget withImageWidget({required context, required PostCubit cubit}) =>
+  Widget withImageWidget({required context, required PostCreationCubit cubit}) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

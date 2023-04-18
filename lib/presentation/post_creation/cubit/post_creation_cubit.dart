@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_app/presentation/post_creation/cubit/post_states.dart';
+import 'package:social_app/presentation/post_creation/cubit/post_creation_states.dart';
 import 'package:social_app/presentation/post_creation/firebase/post_uploading.dart';
 import 'package:social_app/presentation/post_creation/image/post_image_picker.dart';
 import 'package:social_app/shared/components/snackbar.dart';
 
 import '../../../shared/dialogs/image_picker_dialog.dart';
 
-class PostCubit extends Cubit<PostStates> {
-  PostCubit() : super(PostInitialState());
+class PostCreationCubit extends Cubit<PostCreationStates> {
+  PostCreationCubit() : super(PostCreationInitialState());
 
-  static PostCubit get(context) => BlocProvider.of(context);
+  static PostCreationCubit get(context) => BlocProvider.of(context);
 
   List<Map<String, dynamic>> images = [];
 
@@ -38,13 +38,13 @@ class PostCubit extends Cubit<PostStates> {
               sliderHeight = finalHeight;
             }
           }
-          emit(PostPickImageState());
+          emit(PostCreationPickImageState());
         });
   }
 
   removeImage() {
     images = [];
-    emit(PostRemoveImageState());
+    emit(PostCreationRemoveImageState());
   }
 
   showImagePickerDialogAndPickImage({required context}) => showDialog(
@@ -63,12 +63,12 @@ class PostCubit extends Cubit<PostStates> {
 
   changeSliderIndex({required currentIndex}) {
     sliderIndex = currentIndex;
-    emit(PostChangeSliderIndex());
+    emit(PostCreationChangeSliderIndex());
   }
 
   uploadPost(
       {required context, required TextEditingController postController}) {
-    emit(PostLoadingState());
+    emit(PostCreationLoadingState());
     FocusManager.instance.primaryFocus?.unfocus();
     PostUploading postUploading = PostUploading.getInstance();
     postUploading.uploadPostWithImagesToDB(
@@ -79,13 +79,13 @@ class PostCubit extends Cubit<PostStates> {
           images = [];
           defaultSuccessSnackBar(
               message: 'Post uploaded successfully', context: context);
-          emit(PostSuccessState());
+          emit(PostCreationSuccessState());
         },
         onErrorListen: (error) {
           print('Error :: $error');
           defaultErrorSnackBar(
               message: 'Failed to upload post, try again', context: context);
-          emit(PostErrorState());
+          emit(PostCreationErrorState());
         });
   }
 }
