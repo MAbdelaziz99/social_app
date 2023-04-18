@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/presentation/post_creation/cubit/post_states.dart';
+import 'package:social_app/presentation/post_creation/firebase/post_uploading.dart';
 import 'package:social_app/presentation/post_creation/image/post_image_picker.dart';
+import 'package:social_app/shared/components/snackbar.dart';
 
 import '../../../shared/dialogs/image_picker_dialog.dart';
 
@@ -15,7 +17,7 @@ class PostCubit extends Cubit<PostStates> {
   List<Map<String, dynamic>> images = [];
 
   double sliderHeight = 0.0;
-  List<double> imageHeight = [];
+  List<double> imageHeights = [];
 
   pickImage({required context, required isCamera}) {
     PostImagePicker postImagePicker = PostImagePicker.getInstance();
@@ -29,7 +31,9 @@ class PostCubit extends Cubit<PostStates> {
                     MediaQuery.of(context).size.height.toInt()) /
                 int.parse(image['imageWidth']).toInt();
 
-            imageHeight.add(finalHeight);
+            print('final height :: $finalHeight');
+
+            imageHeights.add(finalHeight);
             if (finalHeight > sliderHeight) {
               sliderHeight = finalHeight;
             }
@@ -60,5 +64,28 @@ class PostCubit extends Cubit<PostStates> {
   changeSliderIndex({required currentIndex}) {
     sliderIndex = currentIndex;
     emit(PostChangeSliderIndex());
+  }
+
+  uploadPost(
+      {required context, required TextEditingController postController}) {
+    emit(PostLoadingState());
+    FocusManager.instance.primaryFocus?.unfocus();
+    PostUploading postUploading = PostUploading.getInstance();
+    postUploading.uploadPostWithImagesToDB(
+        postText: postController.text,
+        images: images,
+        onSuccessListen: (value) {
+          postController.text = '';
+          images = [];
+          defaultSuccessSnackBar(
+              message: 'Post uploaded successfully', context: context);
+          emit(PostSuccessState());
+        },
+        onErrorListen: (error) {
+          print('Error :: $error');
+          defaultErrorSnackBar(
+              message: 'Failed to upload post, try again', context: context);
+          emit(PostErrorState());
+        });
   }
 }

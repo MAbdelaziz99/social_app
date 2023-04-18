@@ -23,10 +23,12 @@ class PostImagePicker {
           int imageHeight = decodedImage.height;
           int imageWidth = decodedImage.width;
 
+          print('original height :: $imageHeight');
+
           Map<String, dynamic> imageMap = {
             'image': imageFile,
-            'imageHeight': imageHeight,
-            'imageWidth': imageWidth,
+            'imageHeight': imageHeight.toString(),
+            'imageWidth': imageWidth.toString(),
           };
           imageMaps.add(imageMap);
         }

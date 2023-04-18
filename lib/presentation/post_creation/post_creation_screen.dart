@@ -16,7 +16,9 @@ import 'package:social_app/shared/dialogs/image_picker_dialog.dart';
 import 'package:social_app/shared/style/colors.dart';
 
 class PostCreationScreen extends StatelessWidget {
-  const PostCreationScreen({Key? key}) : super(key: key);
+  final TextEditingController _postController = TextEditingController();
+
+  PostCreationScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,10 @@ class PostCreationScreen extends StatelessWidget {
               actions: [
                 DefaultTextButton(
                   text: 'Post',
-                  onPressed: () {},
+                  onPressed: () {
+                    postCubit.uploadPost(
+                        context: context, postController: _postController);
+                  },
                   size: 20.0.sp,
                 ),
               ],
@@ -57,7 +62,8 @@ class PostCreationScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      LinearProgressIndicator(minHeight: 1.3.h),
+                      if (state is PostLoadingState)
+                        LinearProgressIndicator(minHeight: 1.3.h),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0).r,
                         child: Row(
@@ -124,6 +130,7 @@ class PostCreationScreen extends StatelessWidget {
           children: [
             Expanded(
               child: TextFormField(
+                controller: _postController,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'What do you want to write ? ',
@@ -152,6 +159,7 @@ class PostCreationScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
+            controller: _postController,
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: 'What do you want to write ? ',
@@ -174,11 +182,11 @@ class PostCreationScreen extends StatelessWidget {
                       itemCount: cubit.images.length,
                       itemBuilder: (context, index, realIndex) => Image.file(
                             cubit.images[index]['image'],
-                            height: cubit.imageHeight[index],
+                            height: cubit.imageHeights[index] / 2,
                             width: MediaQuery.of(context).size.width,
                           ),
                       options: CarouselOptions(
-                        height: cubit.sliderHeight,
+                        height: cubit.sliderHeight / 2,
                         enlargeCenterPage: true,
                         autoPlay: false,
                         enableInfiniteScroll: false,
@@ -195,8 +203,8 @@ class PostCreationScreen extends StatelessWidget {
                     effect: ExpandingDotsEffect(
                         dotColor: redColor,
                         activeDotColor: blueColor,
-                        dotHeight: 20.0.h,
-                        dotWidth: 20.0.w),
+                        dotHeight: 16.0.h,
+                        dotWidth: 16.0.w),
                   ),
                 ],
               ),
