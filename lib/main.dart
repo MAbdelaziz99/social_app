@@ -21,11 +21,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -46,11 +48,13 @@ class MyApp extends StatelessWidget {
             create: (context) => HomeCubit()..getUser(),
           ),
           BlocProvider<PostsCubit>(
-            create: (context) => PostsCubit()..getPosts(),
+            create: (context) =>
+                PostsCubit()..getPosts(context: _navigatorKey.currentContext),
           )
         ],
         child: MaterialApp(
           home: const SplashScreen(),
+          navigatorKey: _navigatorKey,
           theme: ThemeData(
             appBarTheme: AppBarTheme(
               backgroundColor: Colors.white,

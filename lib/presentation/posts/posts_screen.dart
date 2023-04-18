@@ -1,15 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:social_app/presentation/posts/cubit/posts_cubit.dart';
 import 'package:social_app/presentation/posts/cubit/posts_states.dart';
 import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/divider.dart';
 import 'package:social_app/shared/style/colors.dart';
 
+import '../../data/data.dart';
 import '../../data/data.dart';
 import '../../data/data.dart';
 import '../../shared/components/link_text_uri.dart';
@@ -101,21 +104,93 @@ class PostsScreen extends StatelessWidget {
                                   ),
                                 ),
                               ],
-                            )
+                            ),
+                            const Spacer(),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.more_horiz,
+                                  color: darkGreyColor,
+                                )),
                           ],
                         ),
                         SizedBox(
                           height: 15.0.h,
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: SelectableText.rich(TextSpan(
-                            children: extractText(
-                                allPosts[itemIndex].postText ?? '', context),
-                            style: TextStyle(
-                                fontSize: 16.0.sp, color: darkGreyColor),
-                          )),
-                        ),
+                        if (allPosts[itemIndex].postText != '')
+                          Column(
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: SelectableText.rich(TextSpan(
+                                  children: extractText(
+                                      allPosts[itemIndex].postText ?? '',
+                                      context),
+                                  style: TextStyle(
+                                      fontSize: 16.0.sp, color: darkGreyColor),
+                                )),
+                              ),
+                              SizedBox(
+                                height: 5.0.h,
+                              ),
+                            ],
+                          ),
+
+                        if (allPosts[itemIndex].images.isNotEmpty)
+                          Column(
+                            children: [
+                              CarouselSlider.builder(
+                                  itemCount: allImageHeights[itemIndex].length,
+                                  itemBuilder: (context, sliderIndex,
+                                          realIndex) =>
+                                      Container(
+                                        alignment: Alignment.topCenter,
+                                        child: CachedNetworkImage(
+                                          imageUrl: allPosts[itemIndex]
+                                                      .images[sliderIndex]
+                                                  ['image'] ??
+                                              '',
+                                          height: allImageHeights[itemIndex]
+                                              [sliderIndex],
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                              Center(
+                                            child: CircularProgressIndicator(
+                                              value: downloadProgress.progress,
+                                            ),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        ),
+                                      ),
+                                  options: CarouselOptions(
+                                    enlargeCenterPage: false,
+                                    autoPlay: false,
+                                    height: sliderHeights[itemIndex] / 2,
+                                    enableInfiniteScroll: false,
+                                    viewportFraction: 1.0,
+                                    onPageChanged: (sliderIndex, reason) {
+                                      cubit.changeSliderIndex(
+                                          itemIndex: itemIndex,
+                                          sliderIndex: sliderIndex);
+                                    },
+                                  )),
+                              SizedBox(
+                                height: 5.0.h,
+                              ),
+                              AnimatedSmoothIndicator(
+                                activeIndex: sliderIndexes[itemIndex],
+                                count: allPosts[itemIndex].images.length,
+                                effect: ExpandingDotsEffect(
+                                    dotColor: redColor,
+                                    activeDotColor: blueColor,
+                                    dotHeight: 16.0.h,
+                                    dotWidth: 16.0.w),
+                              ),
+                            ],
+                          ),
                         defaultPostDivider(),
                         Row(
                           children: [
@@ -125,7 +200,7 @@ class PostsScreen extends StatelessWidget {
                                     context: context, index: itemIndex);
                               },
                               icon: SvgPicture.asset(
-                                likedMap[allPosts[itemIndex].postId]??false
+                                likedMap[allPosts[itemIndex].postId] ?? false
                                     ? 'assets/images/like.svg'
                                     : 'assets/images/no_like.svg',
                                 width: 25.0.r,

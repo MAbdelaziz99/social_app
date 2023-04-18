@@ -7,3 +7,9 @@ UserModel? userModel;
 List<PostModel> allPosts = [];
 
 Map<String, bool> likedMap = {};
+
+List<double> sliderHeights = [];
+
+List<List<double>> allImageHeights = [];
+
+List<int> sliderIndexes = [];

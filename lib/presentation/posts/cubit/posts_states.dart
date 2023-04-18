@@ -11,3 +11,5 @@ class PostsGetErrorState extends PostsStates {}
 class PostLikeSuccessState extends PostsStates {}
 
 class PostLikeErrorState extends PostsStates {}
+
+class PostChangeSliderIndex extends PostsStates {}
