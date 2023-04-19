@@ -8,12 +8,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:social_app/presentation/posts/cubit/posts_cubit.dart';
 import 'package:social_app/presentation/posts/cubit/posts_states.dart';
+import 'package:social_app/router/router_const.dart';
 import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/divider.dart';
+import 'package:social_app/shared/components/navigator.dart';
+import 'package:social_app/shared/constatnts.dart';
 import 'package:social_app/shared/style/colors.dart';
-
-import '../../data/data.dart';
-import '../../data/data.dart';
 import '../../data/data.dart';
 import '../../shared/components/link_text_uri.dart';
 
@@ -36,7 +36,10 @@ class PostsScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0).r,
                 child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      navigateTo(
+                          context: context, routeName: searchForUsersScreen);
+                    },
                     icon: Icon(
                       Icons.search,
                       size: 30.0.r,
@@ -106,12 +109,13 @@ class PostsScreen extends StatelessWidget {
                               ],
                             ),
                             const Spacer(),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.more_horiz,
-                                  color: darkGreyColor,
-                                )),
+                            if (myUid == allPosts[itemIndex].userId)
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.more_horiz,
+                                    color: darkGreyColor,
+                                  )),
                           ],
                         ),
                         SizedBox(
@@ -135,7 +139,6 @@ class PostsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-
                         if (allPosts[itemIndex].images.isNotEmpty)
                           Column(
                             children: [
