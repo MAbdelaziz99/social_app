@@ -8,7 +8,6 @@ class CommentsGetting{
 
   getComments(
       {required Function onSuccessListen,
-        required Function onErrorListen,
         required PostModel postModel}) async {
     FirebaseFirestore.instance
         .collection('Posts')
@@ -18,7 +17,7 @@ class CommentsGetting{
         .listen((event) {
       postModel.postComments = event.docs.length;
       onSuccessListen();
-    }).onError(onErrorListen);
+    });
   }
 
 }

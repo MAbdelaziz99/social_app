@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:social_app/data/data.dart';
 import 'package:social_app/data/models/user_model.dart';
+
+import '../../../data/app_data/user_data.dart';
 
 class HomeUserGetting {
   static HomeUserGetting instance = HomeUserGetting();
@@ -14,10 +15,10 @@ class HomeUserGetting {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .snapshots()
         .listen((event) {
-          if(event.data() != null) {
-            userModel = UserModel.fromJson(event.data());
-          }
-          onGetUserListen();
+      if (event.data() != null) {
+        userModel = UserModel.fromJson(event.data());
+      }
+      onGetUserListen();
     });
   }
 }

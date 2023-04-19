@@ -1,20 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:social_app/data/models/post_model.dart';
 
-import '../../../../data/data.dart';
-
 class ImagesGetting {
   static ImagesGetting instance = ImagesGetting();
 
   static ImagesGetting getInstance() => instance;
 
-  getImages({required context, required PostModel postModel, required Function onSuccessListen}){
+  getImages(
+      PostModel postModel,
+      context,
+      List<double> sliderHeights,
+      List<List<double>> allImageHeights,
+      Function(List<double> sliderHeights) getSliderHeights,
+      Function(List<List<double>> imagesHeight) getImagesHeight,
+      ) {
     if (postModel.images.isNotEmpty) {
       double sliderHeight = 0.0;
       List<double> imageHeights = [];
       for (var image in postModel.images) {
         double finalHeight = (int.parse(image['imageHeight']) *
-            MediaQuery.of(context).size.height.toInt()) /
+                MediaQuery.of(context).size.height.toInt()) /
             int.parse(image['imageWidth']).toInt();
 
         imageHeights.add(finalHeight);
@@ -29,6 +34,7 @@ class ImagesGetting {
       allImageHeights.add([0.0]);
       sliderHeights.add(0.0);
     }
-    onSuccessListen();
+    getSliderHeights(sliderHeights);
+    getImagesHeight(allImageHeights);
   }
 }

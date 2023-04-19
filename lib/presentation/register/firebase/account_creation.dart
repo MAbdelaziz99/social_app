@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:social_app/data/data.dart';
 import 'package:social_app/data/models/user_model.dart';
 import 'package:social_app/shared/components/snackbar.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../data/app_data/user_data.dart';
 
 class AccountCreation {
   static AccountCreation instance = AccountCreation();

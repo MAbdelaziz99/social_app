@@ -16,27 +16,36 @@ class SearchCubit extends Cubit<SearchStates> {
 
   getUsers() {
     emit(SearchLoadingState());
-    streamController.add('');
+
+    startStream();
 
     Stream<String> streamName = streamController.stream;
+
     streamName.listen((userName) {
       users = [];
-      SearchUsersGetting searchUsersGetting = SearchUsersGetting.getInstance();
-      searchUsersGetting.getUsers(onSuccessListen: (event) {
+      SearchUsersGetting.getInstance().getUsers(onSuccessListen: (event) {
         for (var element in event.docs) {
           UserModel userModel = UserModel.fromJson(element.data());
-          if (userName.isNotEmpty) {
-            if (userModel.name!
-                .toLowerCase()
-                .startsWith(userName.toLowerCase())) {
-              users.add(userModel);
-            }
-          } else {
-            users.add(userModel);
-          }
+          validateUserName(userName, userModel);
         }
         emit(SearchSuccessState());
       });
     });
+  }
+
+  void validateUserName(String userName, UserModel userModel) {
+    if (userName.isNotEmpty) {
+      if (userModel.name!
+          .toLowerCase()
+          .startsWith(userName.toLowerCase())) {
+        users.add(userModel);
+      }
+    } else {
+      users.add(userModel);
+    }
+  }
+
+  void startStream() {
+    streamController.add('');
   }
 }

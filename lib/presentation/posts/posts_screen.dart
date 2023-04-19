@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,12 +10,13 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:social_app/presentation/posts/cubit/posts_cubit.dart';
 import 'package:social_app/presentation/posts/cubit/posts_states.dart';
 import 'package:social_app/router/router_const.dart';
+import 'package:social_app/router/screen_arguments.dart';
 import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/divider.dart';
 import 'package:social_app/shared/components/navigator.dart';
+import 'package:social_app/shared/components/shimmer/post_shimmer_item.dart';
 import 'package:social_app/shared/constatnts.dart';
 import 'package:social_app/shared/style/colors.dart';
-import '../../data/data.dart';
 import '../../shared/components/link_text_uri.dart';
 
 class PostsScreen extends StatelessWidget {
@@ -30,7 +32,7 @@ class PostsScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           appBar: AppBar(
             title: const Text(
-              'Posts',
+              'Posts ',
             ),
             actions: [
               Padding(
@@ -48,12 +50,12 @@ class PostsScreen extends StatelessWidget {
             ],
           ),
           body: ConditionalBuilder(
-            condition: allPosts.isNotEmpty,
+            condition: checkPostDataHasReturned(cubit),
             builder: (context) => ListView.separated(
               physics: const BouncingScrollPhysics(),
-              itemCount: allPosts.length,
+              itemCount: cubit.posts.length,
               itemBuilder: (context, index) {
-                int itemIndex = allPosts.length - 1 - index;
+                int itemIndex = cubit.posts.length - 1 - index;
                 return Card(
                   color: Colors.grey[80],
                   elevation: 3.0,
@@ -68,21 +70,26 @@ class PostsScreen extends StatelessWidget {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(30.0.r),
-                              child: CachedNetworkImage(
-                                imageUrl:
-                                    allPosts[itemIndex].userModel?.photo ?? '',
-                                height: 50.0.r,
-                                width: 50.0.r,
-                                fit: BoxFit.cover,
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) => Center(
-                                  child: CircularProgressIndicator(
-                                    value: downloadProgress.progress,
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    DefaultErrorPhotoWidget(size: 50.0.sp),
-                              ),
+                              child: cubit.posts[itemIndex].userModel?.photo !=
+                                      null
+                                  ? CachedNetworkImage(
+                                      imageUrl: cubit.posts[itemIndex].userModel
+                                              ?.photo ??
+                                          '',
+                                      height: 50.0.r,
+                                      width: 50.0.r,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      fit: BoxFit.cover,
+                                      errorWidget: (context, url, error) =>
+                                          DefaultErrorPhotoWidget(
+                                              size: 50.0.sp),
+                                    )
+                                  : const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
                             ),
                             SizedBox(
                               width: 8.0.w,
@@ -91,7 +98,7 @@ class PostsScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  allPosts[itemIndex].userModel?.name ?? '',
+                                  cubit.posts[itemIndex].userModel?.name ?? '',
                                   style: TextStyle(
                                     fontSize: 16.0.sp,
                                     color: blueColor,
@@ -99,7 +106,7 @@ class PostsScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  allPosts[itemIndex].postTime ?? '',
+                                  cubit.posts[itemIndex].postTime ?? '',
                                   style: TextStyle(
                                     fontSize: 14.0.sp,
                                     color: darkGreyColor,
@@ -109,7 +116,7 @@ class PostsScreen extends StatelessWidget {
                               ],
                             ),
                             const Spacer(),
-                            if (myUid == allPosts[itemIndex].userId)
+                            if (myUid == cubit.posts[itemIndex].userId)
                               IconButton(
                                   onPressed: () {},
                                   icon: const Icon(
@@ -121,14 +128,14 @@ class PostsScreen extends StatelessWidget {
                         SizedBox(
                           height: 15.0.h,
                         ),
-                        if (allPosts[itemIndex].postText != '')
+                        if (cubit.posts[itemIndex].postText != '')
                           Column(
                             children: [
                               SizedBox(
                                 width: double.infinity,
                                 child: SelectableText.rich(TextSpan(
                                   children: extractText(
-                                      allPosts[itemIndex].postText ?? '',
+                                      cubit.posts[itemIndex].postText ?? '',
                                       context),
                                   style: TextStyle(
                                       fontSize: 16.0.sp, color: darkGreyColor),
@@ -139,21 +146,22 @@ class PostsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                        if (allPosts[itemIndex].images.isNotEmpty)
+                        if (cubit.posts[itemIndex].images.isNotEmpty)
                           Column(
                             children: [
                               CarouselSlider.builder(
-                                  itemCount: allImageHeights[itemIndex].length,
+                                  itemCount:
+                                      cubit.imageHeights[itemIndex].length,
                                   itemBuilder: (context, sliderIndex,
                                           realIndex) =>
                                       Container(
                                         alignment: Alignment.topCenter,
                                         child: CachedNetworkImage(
-                                          imageUrl: allPosts[itemIndex]
+                                          imageUrl: cubit.posts[itemIndex]
                                                       .images[sliderIndex]
                                                   ['image'] ??
                                               '',
-                                          height: allImageHeights[itemIndex]
+                                          height: cubit.imageHeights[itemIndex]
                                               [sliderIndex],
                                           width:
                                               MediaQuery.of(context).size.width,
@@ -171,7 +179,7 @@ class PostsScreen extends StatelessWidget {
                                   options: CarouselOptions(
                                     enlargeCenterPage: false,
                                     autoPlay: false,
-                                    height: sliderHeights[itemIndex] / 2,
+                                    height: cubit.sliderHeights[itemIndex] / 2,
                                     enableInfiniteScroll: false,
                                     viewportFraction: 1.0,
                                     onPageChanged: (sliderIndex, reason) {
@@ -184,8 +192,8 @@ class PostsScreen extends StatelessWidget {
                                 height: 5.0.h,
                               ),
                               AnimatedSmoothIndicator(
-                                activeIndex: sliderIndexes[itemIndex],
-                                count: allPosts[itemIndex].images.length,
+                                activeIndex: cubit.sliderIndexes[itemIndex],
+                                count: cubit.posts[itemIndex].images.length,
                                 effect: ExpandingDotsEffect(
                                     dotColor: redColor,
                                     activeDotColor: blueColor,
@@ -200,10 +208,12 @@ class PostsScreen extends StatelessWidget {
                             IconButton(
                               onPressed: () {
                                 cubit.likePost(
-                                    context: context, index: itemIndex);
+                                    context: context,
+                                    postModel: cubit.posts[itemIndex]);
                               },
                               icon: SvgPicture.asset(
-                                likedMap[allPosts[itemIndex].postId] ?? false
+                                cubit.likedMap[cubit.posts[itemIndex].postId] ??
+                                        false
                                     ? 'assets/images/like.svg'
                                     : 'assets/images/no_like.svg',
                                 width: 25.0.r,
@@ -222,37 +232,61 @@ class PostsScreen extends StatelessWidget {
                               ),
                             ),
                             const Spacer(),
-                            SvgPicture.asset(
-                              'assets/images/like.svg',
-                              width: 25.0.r,
-                              height: 25.0.r,
-                            ),
-                            SizedBox(
-                              width: 2.w,
-                            ),
-                            Text(
-                              allPosts[itemIndex].postLikes.toString(),
-                              style: TextStyle(
-                                fontSize: 16.0.sp,
-                                color: darkGreyColor,
+                            InkWell(
+                              onTap: () {
+                                ScreenArguments args = ScreenArguments.toLikes(
+                                    likesRef: FirebaseFirestore.instance
+                                        .collection('Posts')
+                                        .doc(cubit.posts[itemIndex].postId)
+                                        .collection('Likes'));
+
+                                Navigator.pushNamed(context, likesScreen,
+                                    arguments: args);
+                              },
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/like.svg',
+                                    width: 25.0.r,
+                                    height: 25.0.r,
+                                  ),
+                                  SizedBox(
+                                    width: 2.w,
+                                  ),
+                                  Text(
+                                    cubit.posts[itemIndex].postLikes.toString(),
+                                    style: TextStyle(
+                                      fontSize: 16.0.sp,
+                                      color: darkGreyColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             SizedBox(
-                              width: 5.w,
+                              width: 10.w,
                             ),
-                            SvgPicture.asset(
-                              'assets/images/comments.svg',
-                              width: 25.0.r,
-                              height: 25.0.r,
-                            ),
-                            SizedBox(
-                              width: 2.w,
-                            ),
-                            Text(
-                              allPosts[itemIndex].postComments.toString(),
-                              style: TextStyle(
-                                fontSize: 16.0.sp,
-                                color: darkGreyColor,
+                            InkWell(
+                              onTap: () {},
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/comments.svg',
+                                    width: 25.0.r,
+                                    height: 25.0.r,
+                                  ),
+                                  SizedBox(
+                                    width: 2.w,
+                                  ),
+                                  Text(
+                                    cubit.posts[itemIndex].postComments
+                                        .toString(),
+                                    style: TextStyle(
+                                      fontSize: 16.0.sp,
+                                      color: darkGreyColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -266,9 +300,7 @@ class PostsScreen extends StatelessWidget {
                 height: 5.0.h,
               ),
             ),
-            fallback: (context) => const Center(
-              child: CircularProgressIndicator(),
-            ),
+            fallback: (context) => const DefaultPostShimmerItem(),
           ),
         );
       },
@@ -279,4 +311,10 @@ class PostsScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 5.0.r, horizontal: 20.0.r),
         child: const DefaultDivider(),
       );
+
+  checkPostDataHasReturned(PostsCubit cubit) =>
+      cubit.posts.length == cubit.sliderHeights.length &&
+      cubit.posts.length == cubit.sliderIndexes.length &&
+      cubit.posts.length == cubit.likedMap.length &&
+      cubit.posts.length == cubit.imageHeights.length;
 }

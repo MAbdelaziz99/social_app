@@ -1,16 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
-import 'package:social_app/data/data.dart';
 import 'package:social_app/data/models/post_model.dart';
 import 'package:social_app/presentation/posts/firebase/posts_data/comments_getting.dart';
 import 'package:social_app/presentation/posts/firebase/posts_data/images_getting.dart';
 import 'package:social_app/presentation/posts/firebase/posts_data/likes_getting.dart';
 import 'package:social_app/presentation/posts/firebase/posts_data/times_getting.dart';
 import 'package:social_app/presentation/posts/firebase/posts_data/users_getting.dart';
-
-import '../../../../data/models/user_model.dart';
-import '../../../../shared/time_ago.dart';
 
 class PostsGetting {
   static PostsGetting instance = PostsGetting();
@@ -19,51 +13,53 @@ class PostsGetting {
 
   Future getPosts(
       {required context,
+      required Function(List<PostModel> postModels) getPosts,
+      required Function(Map<String, bool> likedMap) getLikedMap,
+      required Function(List<double> sliderHeights) getSliderHeights,
+      required Function(List<int> sliderIndexes) getSliderIndexes,
+      required Function(List<List<double>> imagesHeight) getImagesHeight,
       required Function onSuccessListen,
       required Function onErrorListen}) async {
-    UsersGetting usersGetting = UsersGetting.getInstance();
-    LikesGetting likesGetting = LikesGetting.getInstance();
-    CommentsGetting commentsGetting = CommentsGetting.getInstance();
-    TimesGetting timesGetting = TimesGetting.getInstance();
-    ImagesGetting imagesGetting = ImagesGetting.getInstance();
-
     FirebaseFirestore.instance
         .collection('Posts')
         .snapshots()
         .listen((event) async {
-      allPosts = [];
-      likedMap = {};
-      sliderHeights = [];
-      sliderIndexes = [];
-      allImageHeights = [];
+      List<PostModel> allPosts = [];
+      Map<String, bool> likedMap = {};
+      List<double> sliderHeights = [];
+      List<int> sliderIndexes = [];
+      List<List<double>> allImageHeights = [];
       for (var element in event.docs) {
         sliderIndexes.add(0);
 
         PostModel postModel = PostModel.fromJson(element.data());
-        await usersGetting.getPostsUsers(
-            onSuccessListen: onSuccessListen,
-            onErrorListen: onErrorListen,
+        await UsersGetting.getInstance().getPostsUsers(postModel: postModel);
+
+        await LikesGetting.getInstance().getLikes(
+            likedMap: likedMap,
+            getLikedMap: (value) {
+              likedMap = value;
+              getLikedMap(likedMap);
+            },
             postModel: postModel);
 
-        await likesGetting.getLikes(
-            onSuccessListen: onSuccessListen,
-            onErrorListen: onErrorListen,
-            postModel: postModel);
+        await CommentsGetting.getInstance().getComments(onSuccessListen: onSuccessListen,postModel: postModel);
 
-        await commentsGetting.getComments(
-            onSuccessListen: onSuccessListen,
-            onErrorListen: onErrorListen,
-            postModel: postModel);
+        await TimesGetting.getInstance().getTimes(postModel: postModel);
 
-        await timesGetting.getTimes(
-            onSuccessListen: onSuccessListen, postModel: postModel);
-
-        imagesGetting.getImages(context: context, postModel: postModel, onSuccessListen: onSuccessListen);
-
+        ImagesGetting.getInstance().getImages(
+          postModel,
+          context,
+          sliderHeights,
+          allImageHeights,
+          getSliderHeights,
+          getImagesHeight,
+        );
         allPosts.add(postModel);
       }
+      getSliderIndexes(sliderIndexes);
+      getPosts(allPosts);
       onSuccessListen();
     }).onError(onErrorListen);
-    onSuccessListen();
   }
 }

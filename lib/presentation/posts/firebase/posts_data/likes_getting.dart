@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../../../data/data.dart';
 import '../../../../data/models/post_model.dart';
 
 class LikesGetting {
@@ -10,8 +8,8 @@ class LikesGetting {
   static LikesGetting getInstance() => instance;
 
   getLikes(
-      {required Function onSuccessListen,
-      required Function onErrorListen,
+      {required Map<String, bool> likedMap,
+      required Function(Map<String, bool> likedMap) getLikedMap,
       required PostModel postModel}) async {
     FirebaseFirestore.instance
         .collection('Posts')
@@ -21,7 +19,6 @@ class LikesGetting {
         .listen((event) {
       postModel.postLikes = event.docs.length;
       List<String> userIds = [];
-
       for (var element in event.docs) {
         userIds.add(element.id);
       }
@@ -30,7 +27,7 @@ class LikesGetting {
       } else {
         likedMap.addAll({postModel.postId ?? '': false});
       }
-      onSuccessListen();
-    }).onError(onErrorListen);
+      getLikedMap(likedMap);
+    });
   }
 }

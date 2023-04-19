@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_app/presentation/search_for_users/cubit/search_cubit.dart';
 import 'package:social_app/presentation/search_for_users/cubit/search_states.dart';
-import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/divider.dart';
+import 'package:social_app/shared/components/shimmer/users_shimmer_item.dart';
 import 'package:social_app/shared/components/user_item.dart';
 import 'package:social_app/shared/style/colors.dart';
 
@@ -44,25 +45,10 @@ class _SearchForUsersScreenState extends State<SearchForUsersScreen> {
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0).r,
-                  child: ListView.separated(
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return DefaultUserItem(userModel: cubit.users[index]);
-                      },
-                      separatorBuilder: (context, index) {
-                        if (cubit.users.length < 2) {
-                          return Container();
-                        }
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20.0.r,
-                          ),
-                          child: const DefaultDivider(),
-                        );
-                      },
-                      itemCount: cubit.users.length),
-                ));
+                    padding: const EdgeInsets.symmetric(vertical: 8.0).r,
+                    child: DefaultUserItem(
+                      users: cubit.users,
+                    )));
           },
         ));
   }

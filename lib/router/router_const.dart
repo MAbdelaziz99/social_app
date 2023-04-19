@@ -3,3 +3,4 @@ const String loginScreen = '/login';
 const String registerScreen = '/register';
 const String homeScreen = '/home';
 const String searchForUsersScreen = '/search_for_users';
+const String likesScreen = '/likes_screen';

@@ -8,8 +8,6 @@ class UsersGetting{
   static UsersGetting getInstance() => instance;
 
   getPostsUsers({
-    required Function onSuccessListen,
-    required Function onErrorListen,
     required PostModel postModel,
   }) async {
     FirebaseFirestore.instance
@@ -19,8 +17,7 @@ class UsersGetting{
         .listen((event) {
       UserModel userModel = UserModel.fromJson(event.data());
       postModel.userModel = userModel;
-      onSuccessListen();
-    }).onError(onErrorListen);
+    });
   }
 
 }

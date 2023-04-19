@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:social_app/data/data.dart';
 import 'package:social_app/data/models/user_model.dart';
 import 'package:social_app/presentation/register/cubit/register_states.dart';
 import 'package:social_app/presentation/register/firebase/account_creation.dart';
@@ -12,6 +10,8 @@ import 'package:social_app/router/router_const.dart';
 import 'package:social_app/shared/dialogs/image_picker_dialog.dart';
 import 'package:social_app/shared/components/navigator.dart';
 import 'package:social_app/shared/components/snackbar.dart';
+
+import '../../../data/app_data/user_data.dart';
 
 class RegisterCubit extends Cubit<RegisterStates> {
   RegisterCubit() : super(RegisterInitialState());

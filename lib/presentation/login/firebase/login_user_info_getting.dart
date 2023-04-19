@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:social_app/data/data.dart';
 import 'package:social_app/data/models/user_model.dart';
+
+import '../../../data/app_data/user_data.dart';
 
 class LoginUserInfoGetting {
   static LoginUserInfoGetting instance = LoginUserInfoGetting();
@@ -17,7 +18,6 @@ class LoginUserInfoGetting {
           if(event.data() != null) {
             userModel = UserModel.fromJson(event.data());
           }
-          print('Photo :: ${userModel?.photo}');
           onLoginSuccessListen();
     });
   }

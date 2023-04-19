@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:social_app/data/data.dart';
+import 'package:social_app/data/models/post_model.dart';
 
 class PostLiking {
   static PostLiking instance = PostLiking();
@@ -8,12 +8,11 @@ class PostLiking {
   static PostLiking getInstance() => instance;
 
   likePost(
-      {required index,
+      {required PostModel postModel,
       required Function onLikeSuccessListen,
       required Function onLikeErrorListen}) {
-    var postRef = FirebaseFirestore.instance
-        .collection('Posts')
-        .doc(allPosts[index].postId);
+    var postRef =
+        FirebaseFirestore.instance.collection('Posts').doc(postModel.postId);
 
     postRef.collection('Likes').get().then((value) async {
       List<String> users = [];
@@ -25,13 +24,11 @@ class PostLiking {
             .collection('Likes')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .delete();
-        allPosts[index].isLiked = false;
       } else {
         await postRef
             .collection('Likes')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .set({'like': true}).then((value) {
-          allPosts[index].isLiked = true;
           onLikeSuccessListen();
         });
       }

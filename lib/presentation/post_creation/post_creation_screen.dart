@@ -1,19 +1,17 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:social_app/data/data.dart';
 import 'package:social_app/presentation/post_creation/cubit/post_creation_cubit.dart';
 import 'package:social_app/presentation/post_creation/cubit/post_creation_states.dart';
 import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/text_button.dart';
 import 'package:social_app/shared/constatnts.dart';
-import 'package:social_app/shared/dialogs/image_picker_dialog.dart';
 import 'package:social_app/shared/style/colors.dart';
+
+import '../../data/app_data/user_data.dart';
 
 class PostCreationScreen extends StatelessWidget {
   final TextEditingController _postController = TextEditingController();
