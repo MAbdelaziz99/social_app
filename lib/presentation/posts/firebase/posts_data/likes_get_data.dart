@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../data/models/post_model.dart';
 
-class LikesGetting {
-  static LikesGetting instance = LikesGetting();
+class LikesGetData {
+  static LikesGetData instance = LikesGetData();
 
-  static LikesGetting getInstance() => instance;
+  static LikesGetData getInstance() => instance;
 
   getLikes(
       {required Map<String, bool> likedMap,

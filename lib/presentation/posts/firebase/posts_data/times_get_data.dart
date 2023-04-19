@@ -3,10 +3,10 @@ import 'package:intl/intl.dart';
 import '../../../../data/models/post_model.dart';
 import '../../../../shared/time_ago.dart';
 
-class TimesGetting {
-  static TimesGetting instance = TimesGetting();
+class TimesGetData {
+  static TimesGetData instance = TimesGetData();
 
-  static TimesGetting getInstance() => instance;
+  static TimesGetData getInstance() => instance;
 
   getTimes({required PostModel postModel}) {
     DateTime sdf = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

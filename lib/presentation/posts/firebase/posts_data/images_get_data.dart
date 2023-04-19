@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:social_app/data/models/post_model.dart';
 
-class ImagesGetting {
-  static ImagesGetting instance = ImagesGetting();
+class ImagesGetData {
+  static ImagesGetData instance = ImagesGetData();
 
-  static ImagesGetting getInstance() => instance;
+  static ImagesGetData getInstance() => instance;
 
   getImages(
       PostModel postModel,

@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_app/data/models/post_model.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/comments_getting.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/images_getting.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/likes_getting.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/times_getting.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/users_getting.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/comments_get_data.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/images_get_data.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/likes_get_data.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/times_get_data.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/users_get_data.dart';
 
-class PostsGetting {
-  static PostsGetting instance = PostsGetting();
+class PostsGetData {
+  static PostsGetData instance = PostsGetData();
 
-  static PostsGetting getInstance() => instance;
+  static PostsGetData getInstance() => instance;
 
   Future getPosts(
       {required context,
@@ -33,9 +33,9 @@ class PostsGetting {
         sliderIndexes.add(0);
 
         PostModel postModel = PostModel.fromJson(element.data());
-        await UsersGetting.getInstance().getPostsUsers(postModel: postModel);
+        await UsersGetData.getInstance().getPostsUsers(postModel: postModel);
 
-        await LikesGetting.getInstance().getLikes(
+        await LikesGetData.getInstance().getLikes(
             likedMap: likedMap,
             getLikedMap: (value) {
               likedMap = value;
@@ -43,11 +43,11 @@ class PostsGetting {
             },
             postModel: postModel);
 
-        await CommentsGetting.getInstance().getComments(onSuccessListen: onSuccessListen,postModel: postModel);
+        await CommentsGetData.getInstance().getComments(onSuccessListen: onSuccessListen,postModel: postModel);
 
-        await TimesGetting.getInstance().getTimes(postModel: postModel);
+        await TimesGetData.getInstance().getTimes(postModel: postModel);
 
-        ImagesGetting.getInstance().getImages(
+        ImagesGetData.getInstance().getImages(
           postModel,
           context,
           sliderHeights,

@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../data/models/post_model.dart';
 import '../../../../data/models/user_model.dart';
 
-class UsersGetting{
-  static UsersGetting instance = UsersGetting();
-  static UsersGetting getInstance() => instance;
+class UsersGetData{
+  static UsersGetData instance = UsersGetData();
+  static UsersGetData getInstance() => instance;
 
   getPostsUsers({
     required PostModel postModel,
