@@ -55,6 +55,7 @@ class PostsGetting {
           getSliderHeights,
           getImagesHeight,
         );
+
         allPosts.add(postModel);
       }
       getSliderIndexes(sliderIndexes);
