@@ -31,32 +31,7 @@ class CommentsScreen extends StatelessWidget {
     return BlocProvider(
         create: (context) => CommentsCubit()..getComments(postId: postId),
         child: BlocConsumer<CommentsCubit, CommentsStates>(
-          listener: (context, state) {
-            if (CommentsCubit.get(context).commentAddingStatus ==
-                FirebaseStatus.loading.name) {
-              AlertDialog alert = AlertDialog(
-                content: Row(
-                  children: [
-                    const CircularProgressIndicator(),
-                    Container(
-                        padding: const EdgeInsets.only(left: 7),
-                        child: Text(
-                          "Add a comment",
-                          style: TextStyle(
-                              fontSize: 16.0.sp, color: darkGreyColor),
-                        )),
-                  ],
-                ),
-              );
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (BuildContext context) {
-                  return alert;
-                },
-              );
-            }
-          },
+          listener: (context, state) {},
           builder: (context, state) {
             CommentsCubit cubit = CommentsCubit.get(context);
             return SizedBox(
