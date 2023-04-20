@@ -30,7 +30,7 @@ class PhotoPicker {
     } else {
       Navigator.pop(context);
       image = null;
-      defaultErrorSnackBar(message: 'No image selected', context: context);
+      defaultErrorSnackBar(message: 'No image selected', title: 'Photo picking');
     }
     return image;
   }

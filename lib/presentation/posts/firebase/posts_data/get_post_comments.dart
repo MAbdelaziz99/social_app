@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../data/models/post_model.dart';
 
-class CommentsGetData{
-  static CommentsGetData instance = CommentsGetData();
-  static CommentsGetData getInstance() => instance;
+class GetPostComments{
+  static GetPostComments instance = GetPostComments();
+  static GetPostComments getInstance() => instance;
 
   getComments(
       {required Function onSuccessListen,

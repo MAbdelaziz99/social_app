@@ -44,11 +44,11 @@ class AccountCreation {
         .listen((event) {
       if (event.docs.isEmpty) {
         defaultErrorSnackBar(
-            message: "Please enter correct email address", context: context);
+            message: "Please enter correct email address",  title: 'Register an email');
       } else {
         defaultErrorSnackBar(
             message: "Email address is already exist, enter another email",
-            context: context);
+            title: 'Register an email');
       }
     });
   }

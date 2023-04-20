@@ -27,14 +27,14 @@ class LoginCubit extends Cubit<LoginStates> {
         password: password,
         onLoginSuccessListen: () {
           defaultSuccessSnackBar(
-              message: 'You are logged in successful', context: context);
+              message: 'You are logged in successful', title: 'LOGIN');
           navigateToAndRemoveUntil(context: context, routeName: homeScreen);
           emit(LoginSuccessState());
         },
         onLoginErrorListen: (error) {
           defaultErrorSnackBar(
               message: 'Email or password not correct, try again',
-              context: context);
+              title: 'LOGIN');
           emit(LoginErrorState());
         });
   }
@@ -49,17 +49,18 @@ class LoginCubit extends Cubit<LoginStates> {
               Navigator.pop(context);
               defaultSuccessSnackBar(
                   message: 'Password reset  link has been sent',
-                  context: context);
+                  title: 'Password reset');
               emit(LoginResetPasswordSuccessState());
             },
             onResetPasswordError: (error) {
               defaultErrorSnackBar(
-                  message: 'Email not correct, try again.', context: context);
+                  message: 'Email not correct, try again.',
+                  title: 'Password reset');
               emit(LoginResetPasswordErrorState());
             })
         .catchError((error) {
       defaultErrorSnackBar(
-          message: 'Email not correct, try again.', context: context);
+          message: 'Email not correct, try again.', title: 'Password reset');
       emit(LoginResetPasswordErrorState());
     });
   }

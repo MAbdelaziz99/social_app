@@ -25,7 +25,7 @@ class TimeAgo
     final int diff = now - time;
     if (diff < minuteMillis)
     {
-      return "now";
+      return "Just now";
     }
     else if (diff < 2 * minuteMillis)
     {

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:social_app/bloc_observer.dart';
 import 'package:social_app/presentation/home/cubit/home_cubit.dart';
 import 'package:social_app/presentation/login/cubit/login_cubit.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
                 PostsCubit()..getPosts(context: _navigatorKey.currentContext),
           )
         ],
-        child: MaterialApp(
+        child: GetMaterialApp(
           home: const SplashScreen(),
           navigatorKey: _navigatorKey,
           theme: ThemeData(

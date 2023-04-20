@@ -24,6 +24,7 @@ class PostLiking {
             .collection('Likes')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .delete();
+        onLikeSuccessListen();
       } else {
         await postRef
             .collection('Likes')

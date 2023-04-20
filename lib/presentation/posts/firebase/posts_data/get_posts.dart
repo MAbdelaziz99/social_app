@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_app/data/models/post_model.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/comments_get_data.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/images_get_data.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/likes_get_data.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/times_get_data.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/users_get_data.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/get_post_comments.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/get_post_images.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/get_post_likes.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/get_post_times.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/get_post_users.dart';
 
-class PostsGetData {
-  static PostsGetData instance = PostsGetData();
+class GetPosts {
+  static GetPosts instance = GetPosts();
 
-  static PostsGetData getInstance() => instance;
+  static GetPosts getInstance() => instance;
 
   Future getPosts(
       {required context,
@@ -18,6 +18,7 @@ class PostsGetData {
       required Function(List<double> sliderHeights) getSliderHeights,
       required Function(List<int> sliderIndexes) getSliderIndexes,
       required Function(List<List<double>> imagesHeight) getImagesHeight,
+      required Function onAllPostsDataSuccess,
       required Function onSuccessListen,
       required Function onErrorListen}) async {
     FirebaseFirestore.instance
@@ -33,9 +34,9 @@ class PostsGetData {
         sliderIndexes.add(0);
 
         PostModel postModel = PostModel.fromJson(element.data());
-        await UsersGetData.getInstance().getPostsUsers(postModel: postModel);
+        await GetPostUsers.getInstance().getPostsUsers(postModel: postModel);
 
-        await LikesGetData.getInstance().getLikes(
+        await GetPostLikes.getInstance().getLikes(
             likedMap: likedMap,
             getLikedMap: (value) {
               likedMap = value;
@@ -43,11 +44,12 @@ class PostsGetData {
             },
             postModel: postModel);
 
-        await CommentsGetData.getInstance().getComments(onSuccessListen: onSuccessListen,postModel: postModel);
+        await GetPostComments.getInstance().getComments(
+            onSuccessListen: onSuccessListen, postModel: postModel);
 
-        await TimesGetData.getInstance().getTimes(postModel: postModel);
+        await GetPostTimes.getInstance().getTimes(postModel: postModel);
 
-        ImagesGetData.getInstance().getImages(
+        GetImages.getInstance().getImages(
           postModel,
           context,
           sliderHeights,
@@ -61,6 +63,7 @@ class PostsGetData {
       getSliderIndexes(sliderIndexes);
       getPosts(allPosts);
       onSuccessListen();
+      onAllPostsDataSuccess();
     }).onError(onErrorListen);
   }
 }

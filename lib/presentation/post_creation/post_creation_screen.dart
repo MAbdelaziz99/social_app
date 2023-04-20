@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:social_app/presentation/post_creation/cubit/post_creation_cubit.dart';
-import 'package:social_app/presentation/post_creation/cubit/post_creation_states.dart';
+import 'package:social_app/presentation/post_creation/cubit/add_post_cubit.dart';
+import 'package:social_app/presentation/post_creation/cubit/add_post_states.dart';
 import 'package:social_app/shared/components/ErrorPhotoWidget.dart';
 import 'package:social_app/shared/components/text_button.dart';
 import 'package:social_app/shared/constatnts.dart';
@@ -20,12 +20,12 @@ class PostCreationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<PostCreationCubit>(
-      create: (context) => PostCreationCubit(),
-      child: BlocConsumer<PostCreationCubit, PostCreationStates>(
+    return BlocProvider<AddPostCubit>(
+      create: (context) => AddPostCubit(),
+      child: BlocConsumer<AddPostCubit, AddPostStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          PostCreationCubit postCubit = PostCreationCubit.get(context);
+          AddPostCubit postCubit = AddPostCubit.get(context);
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -34,7 +34,7 @@ class PostCreationScreen extends StatelessWidget {
                 DefaultTextButton(
                   text: 'Post',
                   onPressed: () {
-                    postCubit.uploadPost(
+                    postCubit.addPost(
                         context: context, postController: _postController);
                   },
                   size: 20.0.sp,
@@ -121,7 +121,7 @@ class PostCreationScreen extends StatelessWidget {
     );
   }
 
-  Widget withoutImageWidget({required context, required PostCreationCubit cubit}) =>
+  Widget withoutImageWidget({required context, required AddPostCubit cubit}) =>
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +152,7 @@ class PostCreationScreen extends StatelessWidget {
         ),
       );
 
-  Widget withImageWidget({required context, required PostCreationCubit cubit}) =>
+  Widget withImageWidget({required context, required AddPostCubit cubit}) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_app/presentation/post_creation/cubit/post_creation_states.dart';
+import 'package:social_app/presentation/post_creation/cubit/add_post_states.dart';
 import 'package:social_app/presentation/post_creation/firebase/post_uploading.dart';
 import 'package:social_app/presentation/post_creation/image/post_image_picker.dart';
 import 'package:social_app/shared/components/snackbar.dart';
 
 import '../../../shared/dialogs/image_picker_dialog.dart';
 
-class PostCreationCubit extends Cubit<PostCreationStates> {
-  PostCreationCubit() : super(PostCreationInitialState());
+class AddPostCubit extends Cubit<AddPostStates> {
+  AddPostCubit() : super(PostCreationInitialState());
 
-  static PostCreationCubit get(context) => BlocProvider.of(context);
+  static AddPostCubit get(context) => BlocProvider.of(context);
 
   List<Map<String, dynamic>> images = [];
 
@@ -66,11 +66,11 @@ class PostCreationCubit extends Cubit<PostCreationStates> {
     emit(PostCreationChangeSliderIndex());
   }
 
-  uploadPost(
+  addPost(
       {required context, required TextEditingController postController}) {
     emit(PostCreationLoadingState());
     FocusManager.instance.primaryFocus?.unfocus();
-    PostUploading postUploading = PostUploading.getInstance();
+    AddPost postUploading = AddPost.getInstance();
     postUploading.uploadPostWithImagesToDB(
         postText: postController.text,
         images: images,
@@ -78,13 +78,13 @@ class PostCreationCubit extends Cubit<PostCreationStates> {
           postController.text = '';
           images = [];
           defaultSuccessSnackBar(
-              message: 'Post uploaded successfully', context: context);
+              message: 'Post uploaded successfully', title: 'Add a post');
           emit(PostCreationSuccessState());
         },
         onErrorListen: (error) {
           print('Error :: $error');
           defaultErrorSnackBar(
-              message: 'Failed to upload post, try again', context: context);
+              message: 'Failed to upload post, try again', title: 'Add a post');
           emit(PostCreationErrorState());
         });
   }

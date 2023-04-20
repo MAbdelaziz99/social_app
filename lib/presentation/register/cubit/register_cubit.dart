@@ -84,7 +84,7 @@ class RegisterCubit extends Cubit<RegisterStates> {
         profileImage: image,
         onSuccessAccountCreation: (value) {
           defaultSuccessSnackBar(
-              message: 'Account created successfully', context: context);
+              message: 'Account created successfully', title: 'Register an email');
           navigateToAndRemoveUntil(context: context, routeName: homeScreen);
           emit(RegisterSuccessState());
         },
@@ -93,7 +93,7 @@ class RegisterCubit extends Cubit<RegisterStates> {
         },
         onErrorAccountCreation: (error) {
           defaultErrorSnackBar(
-              message: 'Failed to registering account', context: context);
+              message: 'Failed to registering account', title: 'Register an email');
           emit(RegisterErrorState());
         });
   }

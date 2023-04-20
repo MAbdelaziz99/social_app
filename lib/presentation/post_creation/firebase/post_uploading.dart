@@ -6,10 +6,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:social_app/data/models/post_model.dart';
 
-class PostUploading {
-  static PostUploading instance = PostUploading();
+class AddPost {
+  static AddPost instance = AddPost();
 
-  static PostUploading getInstance() => instance;
+  static AddPost getInstance() => instance;
 
   uploadPostWithImagesToDB(
       {required postText,

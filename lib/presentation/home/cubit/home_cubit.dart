@@ -22,7 +22,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
   List<Widget> screens = [
     const ProfileScreen(),
-    const PostsScreen(),
+    PostsScreen(),
     PostCreationScreen(),
     const NotificationsScreen(),
     const ChatsScreen(),

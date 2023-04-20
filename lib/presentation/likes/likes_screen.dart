@@ -27,6 +27,7 @@ class LikesScreen extends StatelessWidget {
                 ),
                 body: DefaultUserItem(
                   users: cubit.users,
+                  usersStatus: cubit.usersStatus,
                 ));
           },
         ));

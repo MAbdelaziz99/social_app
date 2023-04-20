@@ -19,3 +19,11 @@ double getScreenHeightWithoutSafeArea(context) => MediaQuery.of(context).size.he
     kBottomNavigationBarHeight;
 
  var myUid = FirebaseAuth.instance.currentUser?.uid;
+
+
+enum FirebaseStatus {
+  loading,
+  success,
+  error,
+}
+

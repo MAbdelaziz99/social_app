@@ -2,8 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/data/models/post_model.dart';
 import 'package:social_app/presentation/posts/cubit/posts_states.dart';
 import 'package:social_app/presentation/posts/firebase/post_liking.dart';
-import 'package:social_app/presentation/posts/firebase/posts_data/posts_get_data.dart';
+import 'package:social_app/presentation/posts/firebase/posts_data/get_posts.dart';
 import 'package:social_app/shared/components/snackbar.dart';
+import 'package:social_app/shared/constatnts.dart';
 
 class PostsCubit extends Cubit<PostsStates> {
   PostsCubit() : super(PostsInitialState());
@@ -16,9 +17,12 @@ class PostsCubit extends Cubit<PostsStates> {
   List<int> sliderIndexes = [];
   List<List<double>> imageHeights = [];
 
+  String postsStatus = '';
+
   getPosts({required context}) async {
+    postsStatus = FirebaseStatus.loading.name;
     emit(PostsGetLoadingState());
-    PostsGetData postGetting = PostsGetData.getInstance();
+    GetPosts postGetting = GetPosts.getInstance();
     postGetting.getPosts(
         getPosts: (value) => posts = value,
         getLikedMap: (value) => likedMap = value,
@@ -27,17 +31,24 @@ class PostsCubit extends Cubit<PostsStates> {
         getImagesHeight: (value) => imageHeights = value,
         context: context,
         onSuccessListen: () => emit(PostsGetSuccessState()),
-        onErrorListen: (error) => emit(PostsGetErrorState()));
+        onAllPostsDataSuccess: () {
+          postsStatus = FirebaseStatus.success.name;
+          emit(PostsGetSuccessState());
+        },
+        onErrorListen: (error) {
+          postsStatus = FirebaseStatus.error.name;
+          emit(PostsGetSuccessState());
+        });
   }
 
   likePost({required context, required PostModel postModel}) {
     PostLiking postLiking = PostLiking.getInstance();
     postLiking.likePost(
-      postModel: postModel,
+        postModel: postModel,
         onLikeSuccessListen: () => emit(PostLikeSuccessState()),
         onLikeErrorListen: (error) {
           defaultErrorSnackBar(
-              message: 'Failed to like this post, try again', context: context);
+              message: 'Failed to like this post, try again', title: 'Like a post');
           emit(PostLikeErrorState());
         });
   }

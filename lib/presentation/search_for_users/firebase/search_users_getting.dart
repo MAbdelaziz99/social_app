@@ -6,12 +6,14 @@ class SearchUsersGetting {
   static final SearchUsersGetting _instance = SearchUsersGetting();
 
   static SearchUsersGetting getInstance() => _instance;
+
   getUsers(
-      {required Function(QuerySnapshot<Map<String, dynamic>>)
-          onSuccessListen}) async {
+      {required Function(QuerySnapshot<Map<String, dynamic>>) onSuccessListen,
+      required Function onErrorListen}) async {
     return FirebaseFirestore.instance
         .collection('Users')
         .snapshots()
-        .listen(onSuccessListen);
+        .listen(onSuccessListen)
+    .onError(onErrorListen);
   }
 }

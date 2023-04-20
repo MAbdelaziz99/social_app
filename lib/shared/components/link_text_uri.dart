@@ -10,7 +10,7 @@ Future<void> openUrl(String url, context) async {
     Uri.parse(url),
     mode: LaunchMode.externalApplication,
   )) {
-    defaultErrorSnackBar(message: 'Failed to open site', context: context);
+    defaultErrorSnackBar(message: 'Failed to open site',  title: 'Open a site');
   }
 }
 

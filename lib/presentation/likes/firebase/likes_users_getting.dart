@@ -8,6 +8,7 @@ class LikesUsersGetting {
 
   getUsers(
       {required Function(List<UserModel>) onSuccessListen,
+      required Function(dynamic error) onErrorListen,
       required CollectionReference<Map<String, dynamic>> likeRef}) {
     likeRef.snapshots().listen((likeEvent) {
       List<UserModel> users = [];
@@ -21,8 +22,9 @@ class LikesUsersGetting {
           UserModel userModel = UserModel.fromJson(event.data());
           users.add(userModel);
           onSuccessListen(users);
-        });
+        }).onError(onErrorListen);
       }
-    });
+      onSuccessListen(users);
+    }).onError(onErrorListen);
   }
 }
