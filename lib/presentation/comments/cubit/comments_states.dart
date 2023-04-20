@@ -15,4 +15,7 @@ class CommentGetSLoadingState extends CommentsStates {}
 
 class CommentGetSErrorState extends CommentsStates {}
 
-class CommentLikeState extends CommentsStates {}
+class CommentLikeSuccessState extends CommentsStates {}
+
+class CommentLikeErrorState extends CommentsStates {}
+

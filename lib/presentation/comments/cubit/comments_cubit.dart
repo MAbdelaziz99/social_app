@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:social_app/data/models/comment_model.dart';
 import 'package:social_app/presentation/comments/cubit/comments_states.dart';
 import 'package:social_app/presentation/comments/firebase/add_comment/add_comment.dart';
+import 'package:social_app/presentation/comments/firebase/comment_data/get_comments.dart';
+import 'package:social_app/presentation/comments/firebase/like_comment.dart';
 import 'package:social_app/shared/components/snackbar.dart';
 import 'package:social_app/shared/constatnts.dart';
 import 'package:social_app/shared/style/colors.dart';
@@ -52,9 +55,37 @@ class CommentsCubit extends Cubit<CommentsStates> {
         },
         onErrorListen: (error) {
           defaultErrorSnackBar(
-              message: 'Failed to add a comment, try again', title: 'Add a comment');
+              message: 'Failed to add a comment, try again',
+              title: 'Add a comment');
           commentAddingStatus = FirebaseStatus.error.name;
           emit(CommentAddErrorState());
         });
+  }
+
+  List<CommentModel> comments = [];
+  Map<String, bool> likedMap = {};
+  String commentsStatus = '';
+
+  getComments({required postId}) {
+    commentsStatus = FirebaseStatus.loading.name;
+    emit(CommentGetSLoadingState());
+    GetComments.getInstance().getComments(
+        postId: postId,
+        onGetCommentsSuccessListen: (commentModels) {
+          comments = commentModels;
+        },
+        getLikedMap: (value) {
+          likedMap = value;
+        },
+        onGetAllCommentsSuccessListen: () => emit(CommentGetSSuccessState()),
+        onErrorListen: (error) => emit(CommentGetSErrorState()));
+  }
+
+  likeComment({required postId, required CommentModel commentModel}) {
+    LikeComment.getInstance().likeComment(
+        commentModel: commentModel,
+        postId: postId,
+        onLikeSuccessListen: () => emit(CommentLikeSuccessState()),
+        onLikeErrorListen: (error) => CommentLikeErrorState());
   }
 }

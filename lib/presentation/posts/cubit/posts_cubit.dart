@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/data/models/post_model.dart';
 import 'package:social_app/presentation/posts/cubit/posts_states.dart';
-import 'package:social_app/presentation/posts/firebase/post_liking.dart';
+import 'package:social_app/presentation/posts/firebase/like_post.dart';
 import 'package:social_app/presentation/posts/firebase/posts_data/get_posts.dart';
 import 'package:social_app/shared/components/snackbar.dart';
 import 'package:social_app/shared/constatnts.dart';
@@ -42,7 +42,7 @@ class PostsCubit extends Cubit<PostsStates> {
   }
 
   likePost({required context, required PostModel postModel}) {
-    PostLiking postLiking = PostLiking.getInstance();
+    LikePost postLiking = LikePost.getInstance();
     postLiking.likePost(
         postModel: postModel,
         onLikeSuccessListen: () => emit(PostLikeSuccessState()),

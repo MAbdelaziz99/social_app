@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:social_app/presentation/comments/cubit/comments_cubit.dart';
 import 'package:social_app/presentation/comments/cubit/comments_states.dart';
+import 'package:social_app/shared/components/shimmer/comment_shimmer_item.dart';
+import 'package:social_app/shared/components/shimmer/post_shimmer_item.dart';
 import 'package:social_app/shared/constatnts.dart';
 
 import '../../data/app_data/user_data.dart';
@@ -26,7 +29,7 @@ class CommentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => CommentsCubit(),
+        create: (context) => CommentsCubit()..getComments(postId: postId),
         child: BlocConsumer<CommentsCubit, CommentsStates>(
           listener: (context, state) {
             if (CommentsCubit.get(context).commentAddingStatus ==
@@ -88,77 +91,94 @@ class CommentsScreen extends StatelessWidget {
                       ],
                     ),
                     const DefaultDivider(),
-                    Expanded(
-                        child: ListView.separated(
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) => _commentsWidget(),
-                            separatorBuilder: (context, index) => SizedBox(
-                                  height: 20.0.h,
-                                ),
-                            itemCount: 30)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 5.0)
-                          .r,
-                      child: Row(
+                    ConditionalBuilder(
+                      condition: checkCommentsDataIsGot(cubit),
+                      builder: (context) => Expanded(
+                          child: Column(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(30.0.r),
-                            child: CachedNetworkImage(
-                              imageUrl: userModel?.photo ?? '',
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              width: 40.0.r,
-                              height: 40.0.r,
-                              fit: BoxFit.cover,
-                              errorWidget: (context, url, error) => Center(
-                                child: DefaultErrorPhotoWidget(
-                                  size: 30.0.r,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5.0.w,
-                          ),
                           Expanded(
-                            child: TextFormField(
-                              controller: _commentController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(24.0).r),
-                                hintText: 'Write a comment',
-                                hintStyle: TextStyle(
-                                  fontSize: 16.0.sp,
+                              child: ListView.separated(
+                                  physics: const BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    int itemIndex =
+                                        cubit.comments.length - 1 - index;
+                                    return _commentsWidget(
+                                        cubit: cubit, index: itemIndex);
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
+                                        height: 20.0.h,
+                                      ),
+                                  itemCount: cubit.comments.length)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                    horizontal: 5.0, vertical: 5.0)
+                                .r,
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(30.0.r),
+                                  child: CachedNetworkImage(
+                                    imageUrl: userModel?.photo ?? '',
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    width: 40.0.r,
+                                    height: 40.0.r,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) =>
+                                        Center(
+                                      child: DefaultErrorPhotoWidget(
+                                        size: 30.0.r,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              onChanged: (value) {
-                                cubit.checkCommentTextIsEmptyOrNot(value);
-                              },
+                                SizedBox(
+                                  width: 5.0.w,
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _commentController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(24.0).r),
+                                      hintText: 'Write a comment',
+                                      hintStyle: TextStyle(
+                                        fontSize: 16.0.sp,
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: null,
+                                    onChanged: (value) {
+                                      cubit.checkCommentTextIsEmptyOrNot(value);
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                    onPressed: !cubit.isCommentEmpty
+                                        ? () {
+                                            cubit.addComment(
+                                                context: context,
+                                                postId: postId,
+                                                commentController:
+                                                    _commentController);
+                                          }
+                                        : null,
+                                    icon: SvgPicture.asset(
+                                      'assets/images/add_comment.svg',
+                                      width: 25.0.r,
+                                      height: 25.0.r,
+                                    )),
+                              ],
                             ),
                           ),
-                          IconButton(
-                              onPressed: !cubit.isCommentEmpty
-                                  ? () {
-                                      cubit.addComment(
-                                          context: context,
-                                          postId: postId,
-                                          commentController:
-                                              _commentController);
-                                    }
-                                  : null,
-                              icon: SvgPicture.asset(
-                                'assets/images/add_comment.svg',
-                                width: 25.0.r,
-                                height: 25.0.r,
-                              )),
                         ],
-                      ),
-                    ),
+                      )),
+                      fallback: (context) =>
+                          const Expanded(child: DefaultCommentShimmerItem()),
+                    )
                   ],
                 ),
               ),
@@ -167,14 +187,14 @@ class CommentsScreen extends StatelessWidget {
         ));
   }
 
-  Widget _commentsWidget() => Row(
+  Widget _commentsWidget({required CommentsCubit cubit, required index}) => Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(30.0.r),
             child: CachedNetworkImage(
-              imageUrl: userModel?.photo ?? '',
+              imageUrl: cubit.comments[index].userModel?.photo ?? '',
               fit: BoxFit.cover,
               height: 35.0.r,
               width: 35.0.r,
@@ -205,7 +225,7 @@ class CommentsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userModel?.name ?? '',
+                        cubit.comments[index].userModel?.name ?? '',
                         style: TextStyle(
                           fontSize: 16.0.sp,
                           fontWeight: FontWeight.bold,
@@ -216,7 +236,7 @@ class CommentsScreen extends StatelessWidget {
                         height: 5.0.h,
                       ),
                       Text(
-                        'Welocme Hello llloasdgs',
+                        cubit.comments[index].commentText ?? '',
                         style: TextStyle(
                           fontSize: 16.0.sp,
                           color: Colors.black,
@@ -231,7 +251,7 @@ class CommentsScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'Just now',
+                      cubit.comments[index].commentTime ?? '',
                       style: TextStyle(
                         fontSize: 14.0.sp,
                         color: darkGreyColor,
@@ -241,12 +261,21 @@ class CommentsScreen extends StatelessWidget {
                       width: 10.0.w,
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        cubit.likeComment(
+                            postId: postId,
+                            commentModel: cubit.comments[index]);
+                      },
                       child: Text(
                         'Like',
                         style: TextStyle(
                             fontSize: 14.0.sp,
-                            color: blueColor,
+                            color: cubit.likedMap[
+                                        cubit.comments[index].commentId ??
+                                            ''] ??
+                                    false
+                                ? blueColor
+                                : darkGreyColor,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -266,7 +295,7 @@ class CommentsScreen extends StatelessWidget {
                             width: 5.0.w,
                           ),
                           Text(
-                            '0',
+                            cubit.comments[index].commentLikes.toString() ?? '',
                             style: TextStyle(
                               fontSize: 14.0.sp,
                               color: darkGreyColor,
@@ -282,4 +311,7 @@ class CommentsScreen extends StatelessWidget {
           ),
         ],
       );
+
+  checkCommentsDataIsGot(CommentsCubit cubit) =>
+      cubit.comments.length == cubit.likedMap.length;
 }

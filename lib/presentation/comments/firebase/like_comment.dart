@@ -1,18 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:social_app/data/models/post_model.dart';
+import 'package:social_app/data/models/comment_model.dart';
 
-class PostLiking {
-  static PostLiking instance = PostLiking();
+class LikeComment {
+  static final LikeComment _instance = LikeComment();
 
-  static PostLiking getInstance() => instance;
+  static LikeComment getInstance() => _instance;
 
-  likePost(
-      {required PostModel postModel,
+  likeComment(
+      {required CommentModel commentModel,
+      required postId,
       required Function onLikeSuccessListen,
       required Function onLikeErrorListen}) {
-    var postRef =
-        FirebaseFirestore.instance.collection('Posts').doc(postModel.postId);
+    var postRef = FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(postId)
+        .collection('Comments')
+        .doc(commentModel.commentId);
 
     postRef.collection('Likes').get().then((value) async {
       List<String> users = [];
