@@ -78,7 +78,7 @@ class CommentsCubit extends Cubit<CommentsStates> {
 
   getComments({required postId}) {
     commentsStatus = FirebaseStatus.loading.name;
-    emit(CommentGetSLoadingState());
+    emit(CommentGetLoadingState());
     GetComments.getInstance().getComments(
         postId: postId,
         onGetCommentsSuccessListen: (commentModels) {
@@ -87,10 +87,18 @@ class CommentsCubit extends Cubit<CommentsStates> {
         getLikedMap: (value) {
           likedMap = value;
         },
-        onGetAllCommentsSuccessListen: () =>
-            !isClosed ? emit(CommentGetSSuccessState()) : null,
-        onErrorListen: (error) =>
-            !isClosed ? emit(CommentGetSErrorState()) : null);
+        onGetAllCommentsSuccessListen: () {
+          commentsStatus = FirebaseStatus.success.name;
+          if (!isClosed) {
+            emit(CommentGetSuccessState());
+          }
+        },
+        onErrorListen: (error) {
+          commentsStatus = FirebaseStatus.error.name;
+          if (!isClosed) {
+            emit(CommentGetErrorState());
+          }
+        });
   }
 
   likeComment({required postId, required CommentModel commentModel}) {

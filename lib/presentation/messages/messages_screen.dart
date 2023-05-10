@@ -1,0 +1,225 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:social_app/data/app_data/user_data.dart';
+import 'package:social_app/data/models/message_model.dart';
+import 'package:social_app/data/models/user_model.dart';
+import 'package:social_app/presentation/messages/cubit/messages_cubit.dart';
+import 'package:social_app/shared/components/divider.dart';
+import 'package:social_app/shared/components/shimmer/comment_shimmer_item.dart';
+import 'package:social_app/shared/components/snackbar.dart';
+
+import '../../shared/components/ErrorPhotoWidget.dart';
+import '../../shared/style/colors.dart';
+
+class MessagesScreen extends StatelessWidget {
+  final UserModel receiverModel;
+  final double screenHeight;
+  final TextEditingController messageController = TextEditingController();
+
+  MessagesScreen(
+      {Key? key, required this.receiverModel, required this.screenHeight})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          MessagesCubit()..getMessages(receiverModel: receiverModel),
+      child: BlocConsumer<MessagesCubit, MessagesStates>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          MessagesCubit cubit = MessagesCubit.get(context);
+          return SizedBox(
+            height: screenHeight,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  right: 10.0.r,
+                  left: 10.0.r,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 5.0.r),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0).r,
+                    child: Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_outlined,
+                              color: darkGreyColor,
+                            )),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(45.0.r),
+                                child: CachedNetworkImage(
+                                  imageUrl: receiverModel.photo ?? '',
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  width: 45.0.r,
+                                  height: 45.0.r,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) => Center(
+                                    child: DefaultErrorPhotoWidget(
+                                      size: 45.0.r,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8.0.w,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  receiverModel.name ?? '',
+                                  style: TextStyle(
+                                      fontSize: 16.0.sp,
+                                      color: Colors.black,
+                                      overflow: TextOverflow.visible),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const DefaultDivider(),
+                  ConditionalBuilder(
+                      condition: state is !MessagesGetLoadingState,
+                      builder: (context) => Expanded(
+                        child: Column(
+                              children: [
+                                Expanded(
+                                    child: ListView.separated(
+                                        itemBuilder: (context, index) {
+                                          var message = cubit.messages[index];
+                                          if(message.senderId == userModel?.uid){
+                                            return buildMyMessage(message);
+                                          }
+                                          return buildMessage(message);
+                                        },
+                                        separatorBuilder: (context, index) =>
+                                            SizedBox(
+                                              height: 5.0.h,
+                                            ),
+                                        itemCount: cubit.messages.length)),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.grey[300]!, width: 1.0.w),
+                                    borderRadius: BorderRadius.circular(10.0.r),
+                                  ),
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10.0)
+                                              .r,
+                                          child: TextFormField(
+                                            controller: messageController,
+                                            decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText:
+                                                    'Type your message here ...',
+                                                hintStyle: TextStyle(
+                                                    fontWeight: FontWeight.bold)),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 40.0.h,
+                                        color: blueColor,
+                                        child: MaterialButton(
+                                            onPressed: () {
+                                              if (messageController
+                                                  .text.isEmpty) {
+                                                defaultErrorSnackBar(
+                                                    title: 'Add a message',
+                                                    message:
+                                                        'Please type a message');
+                                              } else {
+                                                cubit.addMessage(
+                                                    context: context,
+                                                    receiverModel: receiverModel,
+                                                    messageController:
+                                                        messageController);
+                                              }
+                                            },
+                                            minWidth: 1.0,
+                                            child: Icon(
+                                              Icons.send,
+                                              color: Colors.white,
+                                              size: 16.0.r,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                      ),
+                      fallback: (context) => const Expanded(child: DefaultCommentShimmerItem()))
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  buildMessage(MessageModel messageModel) => Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10.0.r, horizontal: 20.0.r),
+          decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadiusDirectional.only(
+                topEnd: Radius.circular(10.0.r),
+                topStart: Radius.circular(10.0.r),
+                bottomEnd: Radius.circular(10.0.r),
+              )),
+          child: Text(
+            messageModel.messageText ?? '',
+            style: TextStyle(
+              fontSize: 16.0.sp,
+              color: Colors.black,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ),
+      );
+
+  buildMyMessage(MessageModel messageModel) => Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10.0.r, horizontal: 20.0.r),
+          decoration: BoxDecoration(
+              color: blueColor.withOpacity(0.4),
+              borderRadius: BorderRadiusDirectional.only(
+                topEnd: Radius.circular(10.0.r),
+                topStart: Radius.circular(10.0.r),
+                bottomStart: Radius.circular(10.0.r),
+              )),
+          child: Text(
+            messageModel.messageText ?? '',
+            style: TextStyle(
+              fontSize: 16.0.sp,
+              color: Colors.black,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ),
+      );
+}

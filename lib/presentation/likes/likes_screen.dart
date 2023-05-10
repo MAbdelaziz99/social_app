@@ -26,6 +26,7 @@ class LikesScreen extends StatelessWidget {
                   title: const Text('Likes'),
                 ),
                 body: DefaultUserItem(
+                  onItemClick: (index){},
                   users: cubit.users,
                   usersStatus: cubit.usersStatus,
                 ));

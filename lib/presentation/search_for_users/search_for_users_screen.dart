@@ -43,6 +43,7 @@ class _SearchForUsersScreenState extends State<SearchForUsersScreen> {
                 body: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0).r,
                     child: DefaultUserItem(
+                      onItemClick: (index){},
                       users: cubit.users,
                       usersStatus: cubit.usersStatus,
                     )));

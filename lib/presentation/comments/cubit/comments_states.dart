@@ -9,11 +9,11 @@ class CommentAddLoadingState extends CommentsStates {}
 
 class CommentAddErrorState extends CommentsStates {}
 
-class CommentGetSSuccessState extends CommentsStates {}
+class CommentGetSuccessState extends CommentsStates {}
 
-class CommentGetSLoadingState extends CommentsStates {}
+class CommentGetLoadingState extends CommentsStates {}
 
-class CommentGetSErrorState extends CommentsStates {}
+class CommentGetErrorState extends CommentsStates {}
 
 class CommentLikeSuccessState extends CommentsStates {}
 

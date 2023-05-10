@@ -86,11 +86,14 @@ class PostCreationScreen extends StatelessWidget {
                             SizedBox(
                               width: 10.0.w,
                             ),
-                            Text(
-                              userModel?.name ?? '',
-                              style: TextStyle(
-                                fontSize: 16.0.sp,
-                                color: blueColor,
+                            Expanded(
+                              child: Text(
+                                userModel?.name ?? '',
+                                style: TextStyle(
+                                  fontSize: 16.0.sp,
+                                  color: blueColor,
+                                  overflow: TextOverflow.visible
+                                ),
                               ),
                             )
                           ],

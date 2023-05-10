@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:social_app/data/models/user_model.dart';
 
 class GetUsers {
@@ -11,7 +12,9 @@ class GetUsers {
       List<UserModel> users = [];
       for (var element in event.docs) {
         UserModel userModel = UserModel.fromJson(element.data());
-        users.add(userModel);
+        if (userModel.uid != FirebaseAuth.instance.currentUser?.uid) {
+          users.add(userModel);
+        }
       }
       onSuccessListen(users);
     }).onError(onErrorListen);

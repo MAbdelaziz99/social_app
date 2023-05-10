@@ -14,20 +14,22 @@ class HomeScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         HomeCubit cubit = HomeCubit.get(context);
-        return Scaffold(
-          backgroundColor: Colors.white,
-          bottomNavigationBar: BottomNavigationBar(
-            items: cubit.items,
-            currentIndex: cubit.currentIndex,
-            type: BottomNavigationBarType.fixed,
-            elevation: 3.0,
-            onTap: (index) => cubit.changeCurrentIndex(controller, index),
-          ),
-          body: PageView(
-            controller: controller,
-            onPageChanged: (index) =>
-                cubit.changeCurrentIndex(controller, index),
-            children: cubit.screens,
+        return SafeArea(
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            bottomNavigationBar: BottomNavigationBar(
+              items: cubit.items,
+              currentIndex: cubit.currentIndex,
+              type: BottomNavigationBarType.fixed,
+              elevation: 3.0,
+              onTap: (index) => cubit.changeCurrentIndex(controller, index),
+            ),
+            body: PageView(
+              controller: controller,
+              onPageChanged: (index) =>
+                  cubit.changeCurrentIndex(controller, index),
+              children: cubit.screens,
+            ),
           ),
         );
       },

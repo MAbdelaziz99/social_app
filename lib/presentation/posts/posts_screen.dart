@@ -21,7 +21,6 @@ import 'package:social_app/shared/style/colors.dart';
 import '../../shared/components/link_text_uri.dart';
 
 class PostsScreen extends StatelessWidget {
-
   const PostsScreen({Key? key}) : super(key: key);
 
   @override
@@ -31,7 +30,9 @@ class PostsScreen extends StatelessWidget {
       builder: (context, state) {
         PostsCubit cubit = PostsCubit.get(context);
         double screenHeight = MediaQuery.of(context).size.height -
-            MediaQuery.of(context).padding.top;
+            MediaQueryData.fromWindow(WidgetsBinding.instance.window)
+                .padding
+                .top;
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -240,7 +241,22 @@ class PostsScreen extends StatelessWidget {
                                 width: 5.w,
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    context: context,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20.0.r),
+                                          topRight: Radius.circular(20.0.r)),
+                                    ),
+                                    builder: (context) => CommentsScreen(
+                                      screenHeight: screenHeight,
+                                      postId:
+                                          cubit.posts[itemIndex].postId ?? '',
+                                    ),
+                                  );
+                                },
                                 icon: SvgPicture.asset(
                                   'assets/images/comment.svg',
                                   width: 25.0.r,
@@ -288,15 +304,6 @@ class PostsScreen extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
-                                  /*Get.bottomSheet(
-                                    backgroundColor: Colors.white,
-                                    isScrollControlled: true,
-                                    CommentsScreen(
-                                      screenHeight: screenHeight,
-                                      postId:
-                                          cubit.posts[itemIndex].postId ?? '',
-                                    ),
-                                  );*/
                                   showModalBottomSheet(
                                     isScrollControlled: true,
                                     context: context,

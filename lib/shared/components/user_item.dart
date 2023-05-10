@@ -13,9 +13,9 @@ import 'divider.dart';
 class DefaultUserItem extends StatelessWidget {
   final List<UserModel> users;
   final String usersStatus;
-
+  final Function(int index) onItemClick;
   const DefaultUserItem(
-      {Key? key, required this.users, required this.usersStatus})
+      {Key? key, required this.users, required this.usersStatus, required this.onItemClick})
       : super(key: key);
 
   @override
@@ -27,7 +27,7 @@ class DefaultUserItem extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () {},
+                  onTap: () => onItemClick(index),
                   child: Padding(
                     padding: EdgeInsets.all(10.0.r),
                     child: Row(
@@ -54,13 +54,16 @@ class DefaultUserItem extends StatelessWidget {
                         SizedBox(
                           width: 7.0.w,
                         ),
-                        Text(
-                          users[index].name ?? '',
-                          style: TextStyle(
-                              fontSize: 16.0.sp,
-                              color: darkGreyColor,
-                              fontWeight: FontWeight.bold),
-                        )
+                        Expanded(
+                          child: Text(
+                            users[index].name ?? '',
+                            style: TextStyle(
+                                fontSize: 16.0.sp,
+                                color: darkGreyColor,
+                                overflow: TextOverflow.visible,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ],
                     ),
                   ),
