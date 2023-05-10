@@ -12,11 +12,11 @@ class GetCommentLikes {
       required Function(Map<String, bool> likedMap) getLikedMap,
       required CommentModel commentModel}) async {
     FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('posts')
         .doc(commentModel.postId)
-        .collection('Comments')
+        .collection('comments')
         .doc(commentModel.commentId)
-        .collection('Likes')
+        .collection('likes')
         .snapshots()
         .listen((event) {
       commentModel.commentLikes = event.docs.length;

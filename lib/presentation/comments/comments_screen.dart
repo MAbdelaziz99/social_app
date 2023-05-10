@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,10 +8,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:social_app/presentation/comments/cubit/comments_cubit.dart';
 import 'package:social_app/presentation/comments/cubit/comments_states.dart';
 import 'package:social_app/shared/components/shimmer/comment_shimmer_item.dart';
-import 'package:social_app/shared/components/shimmer/post_shimmer_item.dart';
-import 'package:social_app/shared/constatnts.dart';
-
 import '../../data/app_data/user_data.dart';
+import '../../router/router_const.dart';
+import '../../router/screen_arguments.dart';
 import '../../shared/components/ErrorPhotoWidget.dart';
 import '../../shared/components/divider.dart';
 import '../../shared/style/colors.dart';
@@ -67,24 +67,27 @@ class CommentsScreen extends StatelessWidget {
                     ),
                     const DefaultDivider(),
                     ConditionalBuilder(
-                      condition: checkCommentsDataIsGot(cubit),
+                      condition: cubit.checkCommentsDataIsGot(cubit),
                       builder: (context) => Expanded(
                           child: Column(
                         children: [
                           Expanded(
-                              child: ListView.separated(
-                                  physics: const BouncingScrollPhysics(),
-                                  itemBuilder: (context, index) {
-                                    int itemIndex =
-                                        cubit.comments.length - 1 - index;
-                                    return _commentsWidget(
-                                        cubit: cubit, index: itemIndex);
-                                  },
-                                  separatorBuilder: (context, index) =>
-                                      SizedBox(
-                                        height: 20.0.h,
-                                      ),
-                                  itemCount: cubit.comments.length)),
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0).r,
+                            child: ListView.separated(
+                                physics: const BouncingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  int itemIndex =
+                                      cubit.comments.length - 1 - index;
+                                  return _commentsWidget(
+                                    context: context,
+                                      cubit: cubit, index: itemIndex);
+                                },
+                                separatorBuilder: (context, index) => SizedBox(
+                                      height: 20.0.h,
+                                    ),
+                                itemCount: cubit.comments.length),
+                          )),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                     horizontal: 5.0, vertical: 5.0)
@@ -162,7 +165,7 @@ class CommentsScreen extends StatelessWidget {
         ));
   }
 
-  Widget _commentsWidget({required CommentsCubit cubit, required index}) => Row(
+  Widget _commentsWidget({required context,required CommentsCubit cubit, required index}) => Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -258,7 +261,18 @@ class CommentsScreen extends StatelessWidget {
                       width: 30.0.w,
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        ScreenArguments args = ScreenArguments.toLikes(
+                            likesRef: FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(postId)
+                                .collection('comments')
+                                .doc(cubit.comments[index].commentId)
+                                .collection('likes'));
+
+                        Navigator.pushNamed(context, likesScreen,
+                            arguments: args);
+                      },
                       child: Row(
                         children: [
                           SvgPicture.asset(
@@ -270,7 +284,7 @@ class CommentsScreen extends StatelessWidget {
                             width: 5.0.w,
                           ),
                           Text(
-                            cubit.comments[index].commentLikes.toString() ?? '',
+                            '${cubit.comments[index].commentLikes}',
                             style: TextStyle(
                               fontSize: 14.0.sp,
                               color: darkGreyColor,
@@ -286,7 +300,4 @@ class CommentsScreen extends StatelessWidget {
           ),
         ],
       );
-
-  checkCommentsDataIsGot(CommentsCubit cubit) =>
-      cubit.comments.length == cubit.likedMap.length;
 }

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_app/data/models/user_model.dart';
 
-class LikesUsersGetting {
-  static final LikesUsersGetting _instance = LikesUsersGetting();
+class GetLikesUsers {
+  static final GetLikesUsers _instance = GetLikesUsers();
 
-  static LikesUsersGetting getInstance() => _instance;
+  static GetLikesUsers getInstance() => _instance;
 
   getUsers(
       {required Function(List<UserModel>) onSuccessListen,
@@ -15,7 +15,7 @@ class LikesUsersGetting {
       for (var element in likeEvent.docs) {
         String userId = element.id;
         FirebaseFirestore.instance
-            .collection('Users')
+            .collection('users')
             .doc(userId)
             .snapshots()
             .listen((event) {

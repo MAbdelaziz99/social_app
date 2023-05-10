@@ -12,26 +12,26 @@ class LikeComment {
       required postId,
       required Function onLikeSuccessListen,
       required Function onLikeErrorListen}) {
-    var postRef = FirebaseFirestore.instance
-        .collection('Posts')
+    var commentRef = FirebaseFirestore.instance
+        .collection('posts')
         .doc(postId)
-        .collection('Comments')
+        .collection('comments')
         .doc(commentModel.commentId);
 
-    postRef.collection('Likes').get().then((value) async {
+    commentRef.collection('likes').get().then((value) async {
       List<String> users = [];
       for (var element in value.docs) {
         users.add(element.id);
       }
       if (users.contains(FirebaseAuth.instance.currentUser?.uid)) {
-        await postRef
-            .collection('Likes')
+        await commentRef
+            .collection('likes')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .delete();
         onLikeSuccessListen();
       } else {
-        await postRef
-            .collection('Likes')
+        await commentRef
+            .collection('likes')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .set({'like': true}).then((value) {
           onLikeSuccessListen();

@@ -25,7 +25,7 @@ class PostCreationScreen extends StatelessWidget {
       child: BlocConsumer<AddPostCubit, AddPostStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          AddPostCubit postCubit = AddPostCubit.get(context);
+          AddPostCubit cubit = AddPostCubit.get(context);
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -34,7 +34,7 @@ class PostCreationScreen extends StatelessWidget {
                 DefaultTextButton(
                   text: 'Post',
                   onPressed: () {
-                    postCubit.addPost(
+                    cubit.addPost(
                         context: context, postController: _postController);
                   },
                   size: 20.0.sp,
@@ -51,7 +51,7 @@ class PostCreationScreen extends StatelessWidget {
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: SizedBox(
-                height: postCubit.images.isEmpty
+                height: cubit.images.isEmpty
                     ? getScreenHeightWithoutSafeArea(context)
                     : null,
                 child: Padding(
@@ -60,7 +60,7 @@ class PostCreationScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      if (state is PostCreationLoadingState)
+                      if (cubit.addPostStatus == FirebaseStatus.loading.name)
                         LinearProgressIndicator(minHeight: 1.3.h),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0).r,
@@ -106,10 +106,9 @@ class PostCreationScreen extends StatelessWidget {
                           color: darkGreyColor,
                         ),
                       ),
-                      postCubit.images.isEmpty
-                          ? withoutImageWidget(
-                              context: context, cubit: postCubit)
-                          : withImageWidget(context: context, cubit: postCubit),
+                      cubit.images.isEmpty
+                          ? withoutImageWidget(context: context, cubit: cubit)
+                          : withImageWidget(context: context, cubit: cubit),
                     ],
                   ),
                 ),

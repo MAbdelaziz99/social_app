@@ -1,8 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/shared/firebase/get_users.dart';
 import 'package:social_app/presentation/search_for_users/cubit/search_states.dart';
-import 'package:social_app/presentation/search_for_users/firebase/search_users_getting.dart';
 import 'package:social_app/shared/constatnts.dart';
 
 import '../../../data/models/user_model.dart';
@@ -23,16 +22,19 @@ class SearchCubit extends Cubit<SearchStates> {
     Stream<String> streamName = streamController.stream;
     streamName.listen((userName) {
       users = [];
-      SearchUsersGetting.getInstance().getUsers(onSuccessListen: (event) {
-        for (var element in event.docs) {
-          UserModel userModel = UserModel.fromJson(element.data());
-          validateUserName(userName, userModel);
+      GetUsers.getInstance.getUsers(onSuccessListen: (users) {
+        for (UserModel user in users) {
+          validateUserName(userName, user);
         }
         usersStatus = FirebaseStatus.success.name;
-        emit(SearchSuccessState());
+        if (!isClosed) {
+          emit(SearchSuccessState());
+        }
       }, onErrorListen: (error) {
         usersStatus = FirebaseStatus.error.name;
-        emit(SearchErrorState());
+        if (!isClosed) {
+          emit(SearchErrorState());
+        }
       });
     });
   }

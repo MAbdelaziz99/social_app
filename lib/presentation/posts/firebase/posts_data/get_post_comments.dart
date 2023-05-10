@@ -10,9 +10,9 @@ class GetPostComments{
       {required Function onSuccessListen,
         required PostModel postModel}) async {
     FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('posts')
         .doc(postModel.postId)
-        .collection('Comments')
+        .collection('comments')
         .snapshots()
         .listen((event) {
       postModel.postComments = event.docs.length;

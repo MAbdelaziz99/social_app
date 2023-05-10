@@ -4,14 +4,14 @@ import 'package:social_app/data/models/user_model.dart';
 
 import '../../../data/app_data/user_data.dart';
 
-class HomeUserGetting {
-  static HomeUserGetting instance = HomeUserGetting();
+class GetUser {
+  static GetUser instance = GetUser();
 
-  static HomeUserGetting getInstance() => instance;
+  static GetUser getInstance() => instance;
 
   getUser({required Function onGetUserListen}) {
     FirebaseFirestore.instance
-        .collection('Users')
+        .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .snapshots()
         .listen((event) {

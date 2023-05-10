@@ -18,16 +18,15 @@ class GetComments {
       required Function onGetAllCommentsSuccessListen,
       required Function(dynamic error) onErrorListen}) {
     FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('posts')
         .doc(postId)
-        .collection('Comments')
+        .collection('comments')
         .snapshots()
         .listen((event) {
       List<CommentModel> commentModels = [];
       Map<String, bool> likedMap = {};
       for (var element in event.docs) {
         CommentModel commentModel = CommentModel.fromJson(element.data());
-
         GetCommentsUsers.getInstance().getUsers(
             commentModel: commentModel,
             onGetUsersSuccessListen: onGetAllCommentsSuccessListen);
@@ -39,7 +38,6 @@ class GetComments {
             getLikedMap: getLikedMap,
             commentModel: commentModel);
         commentModels.add(commentModel);
-
 
         onGetCommentsSuccessListen(commentModels);
       }

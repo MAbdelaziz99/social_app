@@ -28,6 +28,9 @@ class CommentsCubit extends Cubit<CommentsStates> {
     emit(CommentCheckTheTextIsEmptyOrNotState());
   }
 
+  checkCommentsDataIsGot(CommentsCubit cubit) =>
+      cubit.comments.length == cubit.likedMap.length;
+
   String commentAddingStatus = '';
 
   addComment(
@@ -84,8 +87,10 @@ class CommentsCubit extends Cubit<CommentsStates> {
         getLikedMap: (value) {
           likedMap = value;
         },
-        onGetAllCommentsSuccessListen: () => emit(CommentGetSSuccessState()),
-        onErrorListen: (error) => emit(CommentGetSErrorState()));
+        onGetAllCommentsSuccessListen: () =>
+            !isClosed ? emit(CommentGetSSuccessState()) : null,
+        onErrorListen: (error) =>
+            !isClosed ? emit(CommentGetSErrorState()) : null);
   }
 
   likeComment({required postId, required CommentModel commentModel}) {

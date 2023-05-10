@@ -22,7 +22,7 @@ class GetPosts {
       required Function onSuccessListen,
       required Function onErrorListen}) async {
     FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('posts')
         .snapshots()
         .listen((event) async {
       List<PostModel> allPosts = [];

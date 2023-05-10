@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/presentation/post_creation/cubit/add_post_states.dart';
-import 'package:social_app/presentation/post_creation/firebase/post_uploading.dart';
+import 'package:social_app/presentation/post_creation/firebase/add_post.dart';
 import 'package:social_app/presentation/post_creation/image/post_image_picker.dart';
 import 'package:social_app/shared/components/snackbar.dart';
+import 'package:social_app/shared/constatnts.dart';
 
 import '../../../shared/dialogs/image_picker_dialog.dart';
 
@@ -30,8 +29,6 @@ class AddPostCubit extends Cubit<AddPostStates> {
             double finalHeight = (int.parse(image['imageHeight']) *
                     MediaQuery.of(context).size.height.toInt()) /
                 int.parse(image['imageWidth']).toInt();
-
-            print('final height :: $finalHeight');
 
             imageHeights.add(finalHeight);
             if (finalHeight > sliderHeight) {
@@ -66,12 +63,14 @@ class AddPostCubit extends Cubit<AddPostStates> {
     emit(PostCreationChangeSliderIndex());
   }
 
-  addPost(
-      {required context, required TextEditingController postController}) {
+  String addPostStatus = '';
+
+  addPost({required context, required TextEditingController postController}) {
+    addPostStatus = FirebaseStatus.loading.name;
     emit(PostCreationLoadingState());
     FocusManager.instance.primaryFocus?.unfocus();
     AddPost postUploading = AddPost.getInstance();
-    postUploading.uploadPostWithImagesToDB(
+    postUploading.addPost(
         postText: postController.text,
         images: images,
         onSuccessListen: (value) {
@@ -79,12 +78,13 @@ class AddPostCubit extends Cubit<AddPostStates> {
           images = [];
           defaultSuccessSnackBar(
               message: 'Post uploaded successfully', title: 'Add a post');
+          addPostStatus = FirebaseStatus.success.name;
           emit(PostCreationSuccessState());
         },
         onErrorListen: (error) {
-          print('Error :: $error');
           defaultErrorSnackBar(
               message: 'Failed to upload post, try again', title: 'Add a post');
+          addPostStatus = FirebaseStatus.error.name;
           emit(PostCreationErrorState());
         });
   }

@@ -12,9 +12,9 @@ class GetPostLikes {
       required Function(Map<String, bool> likedMap) getLikedMap,
       required PostModel postModel}) async {
     FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('posts')
         .doc(postModel.postId)
-        .collection('Likes')
+        .collection('likes')
         .snapshots()
         .listen((event) {
       postModel.postLikes = event.docs.length;

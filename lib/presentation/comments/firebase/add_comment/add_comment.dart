@@ -28,9 +28,9 @@ class AddComment {
         userId: userModel?.uid);
 
     FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('posts')
         .doc(postId)
-        .collection('Comments')
+        .collection('comments')
         .doc(commentId)
         .set(commentModel.toMap())
         .then(onSuccessListen)

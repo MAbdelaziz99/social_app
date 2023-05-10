@@ -11,7 +11,7 @@ class GetPostUsers{
     required PostModel postModel,
   }) async {
     FirebaseFirestore.instance
-        .collection('Users')
+        .collection('users')
         .doc(postModel.userId)
         .snapshots()
         .listen((event) {

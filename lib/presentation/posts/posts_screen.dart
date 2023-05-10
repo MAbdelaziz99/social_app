@@ -100,29 +100,31 @@ class PostsScreen extends StatelessWidget {
                               SizedBox(
                                 width: 8.0.w,
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    cubit.posts[itemIndex].userModel?.name ??
-                                        '',
-                                    style: TextStyle(
-                                      fontSize: 16.0.sp,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      cubit.posts[itemIndex].userModel?.name ??
+                                          '',
+                                      style: TextStyle(
+                                        fontSize: 16.0.sp,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        overflow: TextOverflow.visible,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    cubit.posts[itemIndex].postTime ?? '',
-                                    style: TextStyle(
-                                      fontSize: 14.0.sp,
-                                      color: darkGreyColor,
-                                      fontWeight: FontWeight.normal,
+                                    Text(
+                                      cubit.posts[itemIndex].postTime ?? '',
+                                      style: TextStyle(
+                                        fontSize: 14.0.sp,
+                                        color: darkGreyColor,
+                                        fontWeight: FontWeight.normal,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                              const Spacer(),
                               if (myUid == cubit.posts[itemIndex].userId)
                                 IconButton(
                                     onPressed: () {},
@@ -252,10 +254,10 @@ class PostsScreen extends StatelessWidget {
                                       ScreenArguments.toLikes(
                                           likesRef: FirebaseFirestore
                                               .instance
-                                              .collection('Posts')
+                                              .collection('posts')
                                               .doc(
                                                   cubit.posts[itemIndex].postId)
-                                              .collection('Likes'));
+                                              .collection('likes'));
 
                                   Navigator.pushNamed(context, likesScreen,
                                       arguments: args);

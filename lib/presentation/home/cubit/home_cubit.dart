@@ -1,14 +1,11 @@
 import 'dart:core';
-
-import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:social_app/presentation/chats/chats_screen.dart';
 import 'package:social_app/presentation/home/cubit/home_states.dart';
-import 'package:social_app/presentation/home/firebase/user_getting.dart';
+import 'package:social_app/presentation/home/firebase/get_user.dart';
 import 'package:social_app/presentation/notifications/notifications_screen.dart';
 import 'package:social_app/presentation/post_creation/post_creation_screen.dart';
 import 'package:social_app/presentation/posts/posts_screen.dart';
@@ -22,7 +19,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
   List<Widget> screens = [
     const ProfileScreen(),
-    PostsScreen(),
+    const PostsScreen(),
     PostCreationScreen(),
     const NotificationsScreen(),
     const ChatsScreen(),
@@ -63,13 +60,14 @@ class HomeCubit extends Cubit<HomeStates> {
 
   int currentIndex = 1;
 
-  changeBottomNavIndex(index) {
+  changeCurrentIndex(PageController pageController, index) {
     currentIndex = index;
+    pageController.jumpToPage(currentIndex);
     emit(HomeChangeBottomNavIndexState());
   }
 
   getUser() {
-    HomeUserGetting homeUserGetting = HomeUserGetting.getInstance();
+    GetUser homeUserGetting = GetUser.getInstance();
     homeUserGetting.getUser(onGetUserListen: () {
       emit(HomeGetUserState());
     });

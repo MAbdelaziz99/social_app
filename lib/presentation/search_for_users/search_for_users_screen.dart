@@ -1,12 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_app/presentation/search_for_users/cubit/search_cubit.dart';
 import 'package:social_app/presentation/search_for_users/cubit/search_states.dart';
-import 'package:social_app/shared/components/divider.dart';
-import 'package:social_app/shared/components/shimmer/users_shimmer_item.dart';
 import 'package:social_app/shared/components/user_item.dart';
 import 'package:social_app/shared/style/colors.dart';
 

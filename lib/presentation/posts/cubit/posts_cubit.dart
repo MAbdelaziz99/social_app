@@ -33,11 +33,15 @@ class PostsCubit extends Cubit<PostsStates> {
         onSuccessListen: () => emit(PostsGetSuccessState()),
         onAllPostsDataSuccess: () {
           postsStatus = FirebaseStatus.success.name;
-          emit(PostsGetSuccessState());
+          if (!isClosed) {
+            emit(PostsGetSuccessState());
+          }
         },
         onErrorListen: (error) {
           postsStatus = FirebaseStatus.error.name;
-          emit(PostsGetSuccessState());
+          if (!isClosed) {
+            emit(PostsGetSuccessState());
+          }
         });
   }
 
@@ -48,7 +52,8 @@ class PostsCubit extends Cubit<PostsStates> {
         onLikeSuccessListen: () => emit(PostLikeSuccessState()),
         onLikeErrorListen: (error) {
           defaultErrorSnackBar(
-              message: 'Failed to like this post, try again', title: 'Like a post');
+              message: 'Failed to like this post, try again',
+              title: 'Like a post');
           emit(PostLikeErrorState());
         });
   }

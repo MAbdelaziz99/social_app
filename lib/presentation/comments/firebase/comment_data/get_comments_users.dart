@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_app/data/models/comment_model.dart';
-
-import '../../../../data/models/post_model.dart';
 import '../../../../data/models/user_model.dart';
 
 class GetCommentsUsers {
@@ -13,7 +11,7 @@ class GetCommentsUsers {
       {required CommentModel commentModel,
       required Function onGetUsersSuccessListen}) {
     FirebaseFirestore.instance
-        .collection('Users')
+        .collection('users')
         .doc(commentModel.userId)
         .snapshots()
         .listen((event) {

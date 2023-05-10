@@ -4,7 +4,9 @@ import 'package:social_app/presentation/home/cubit/home_cubit.dart';
 import 'package:social_app/presentation/home/cubit/home_states.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final PageController controller = PageController(initialPage: 1);
+
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,14 @@ class HomeScreen extends StatelessWidget {
             currentIndex: cubit.currentIndex,
             type: BottomNavigationBarType.fixed,
             elevation: 3.0,
-            onTap: (index) {
-              cubit.changeBottomNavIndex(index);
-            },
+            onTap: (index) => cubit.changeCurrentIndex(controller, index),
           ),
-          body: cubit.screens[cubit.currentIndex],
+          body: PageView(
+            controller: controller,
+            onPageChanged: (index) =>
+                cubit.changeCurrentIndex(controller, index),
+            children: cubit.screens,
+          ),
         );
       },
     );

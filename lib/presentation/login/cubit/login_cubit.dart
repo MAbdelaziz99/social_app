@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/presentation/login/cubit/login_states.dart';
-import 'package:social_app/presentation/login/firebase/account_logging.dart';
+import 'package:social_app/presentation/login/firebase/login_user.dart';
 import 'package:social_app/presentation/login/firebase/password_factory.dart';
 import 'package:social_app/router/router_const.dart';
 import 'package:social_app/shared/components/navigator.dart';
@@ -21,7 +21,7 @@ class LoginCubit extends Cubit<LoginStates> {
 
   loginUser({required context, required email, required password}) {
     emit(LoginLoadingState());
-    AccountLogging accountLogging = AccountLogging.getInstance();
+    LoginUser accountLogging = LoginUser.getInstance();
     accountLogging.loginUser(
         email: email,
         password: password,

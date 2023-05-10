@@ -10,42 +10,46 @@ class DefaultTextFormField extends StatelessWidget {
   final bool? obscureText;
   final String errorMsg;
   final TextInputType keyboardType;
+  final bool? isNextTabEnable;
 
-  const DefaultTextFormField({Key? key,
+  const DefaultTextFormField({
+    Key? key,
     required this.controller,
     required this.hintText,
     required this.prefixIcon,
     this.obscureText,
     required this.errorMsg,
     required this.keyboardType,
+    this.isNextTabEnable = true,
     this.onSuffixIcon,
-    this.suffixIcon,})
-      : super(key: key);
+    this.suffixIcon,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 60.0.h,
       child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType ,
+        keyboardType: keyboardType,
+        textInputAction: isNextTabEnable! ? TextInputAction.next : null,
         decoration: InputDecoration(
           border:
-          OutlineInputBorder(borderRadius: BorderRadius
-              .circular(10.0)
-              .r),
+              OutlineInputBorder(borderRadius: BorderRadius.circular(10.0).r),
           hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 16.0.sp,
           ),
           prefixIcon: Icon(prefixIcon),
-          suffixIcon: IconButton(icon: Icon(suffixIcon), onPressed: onSuffixIcon,),
+          suffixIcon: IconButton(
+            icon: Icon(suffixIcon),
+            onPressed: onSuffixIcon,
+          ),
         ),
         maxLines: 1,
         textAlign: TextAlign.start,
-        obscureText: obscureText??false,
+        obscureText: obscureText ?? false,
         validator: (value) {
-          if(value == null || value.isEmpty){
+          if (value == null || value.isEmpty) {
             return errorMsg;
           }
           return null;
