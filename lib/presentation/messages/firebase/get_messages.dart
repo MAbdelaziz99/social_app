@@ -15,6 +15,7 @@ class GetMessages {
         .collection('chats')
         .doc(receiverModel.uid)
         .collection('messages')
+        .orderBy('messageId')
         .snapshots()
         .listen((event) {
       List<MessageModel> messages = [];

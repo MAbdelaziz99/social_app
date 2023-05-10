@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_app/data/app_data/user_data.dart';
@@ -14,26 +15,36 @@ import 'package:social_app/shared/components/snackbar.dart';
 import '../../shared/components/ErrorPhotoWidget.dart';
 import '../../shared/style/colors.dart';
 
-class MessagesScreen extends StatelessWidget {
+class MessagesScreen extends StatefulWidget {
   final UserModel receiverModel;
   final double screenHeight;
-  final TextEditingController messageController = TextEditingController();
 
-  MessagesScreen(
+  const MessagesScreen(
       {Key? key, required this.receiverModel, required this.screenHeight})
       : super(key: key);
 
   @override
+  State<MessagesScreen> createState() => _MessagesScreenState();
+}
+
+class _MessagesScreenState extends State<MessagesScreen> {
+  final TextEditingController messageController = TextEditingController();
+
+  final ScrollController scrollController = ScrollController();
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          MessagesCubit()..getMessages(receiverModel: receiverModel),
+      create: (context) => MessagesCubit()
+        ..getMessages(
+            receiverModel: widget.receiverModel,
+            scrollController: scrollController),
       child: BlocConsumer<MessagesCubit, MessagesStates>(
         listener: (context, state) {},
         builder: (context, state) {
           MessagesCubit cubit = MessagesCubit.get(context);
           return SizedBox(
-            height: screenHeight,
+            height: widget.screenHeight,
             child: Padding(
               padding: EdgeInsets.only(
                   right: 10.0.r,
@@ -60,7 +71,7 @@ class MessagesScreen extends StatelessWidget {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(45.0.r),
                                 child: CachedNetworkImage(
-                                  imageUrl: receiverModel.photo ?? '',
+                                  imageUrl: widget.receiverModel.photo ?? '',
                                   placeholder: (context, url) => const Center(
                                     child: CircularProgressIndicator(),
                                   ),
@@ -79,7 +90,7 @@ class MessagesScreen extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  receiverModel.name ?? '',
+                                  widget.receiverModel.name ?? '',
                                   style: TextStyle(
                                       fontSize: 16.0.sp,
                                       color: Colors.black,
@@ -94,15 +105,16 @@ class MessagesScreen extends StatelessWidget {
                   ),
                   const DefaultDivider(),
                   ConditionalBuilder(
-                      condition: state is !MessagesGetLoadingState,
+                      condition: state is! MessagesGetLoadingState,
                       builder: (context) => Expanded(
-                        child: Column(
+                            child: Column(
                               children: [
                                 Expanded(
                                     child: ListView.separated(
                                         itemBuilder: (context, index) {
                                           var message = cubit.messages[index];
-                                          if(message.senderId == userModel?.uid){
+                                          if (message.senderId ==
+                                              userModel?.uid) {
                                             return buildMyMessage(message);
                                           }
                                           return buildMessage(message);
@@ -111,7 +123,11 @@ class MessagesScreen extends StatelessWidget {
                                             SizedBox(
                                               height: 5.0.h,
                                             ),
+                                        controller: scrollController,
                                         itemCount: cubit.messages.length)),
+                                SizedBox(
+                                  height: 10.0.h,
+                                ),
                                 Container(
                                   decoration: BoxDecoration(
                                     border: Border.all(
@@ -133,7 +149,8 @@ class MessagesScreen extends StatelessWidget {
                                                 hintText:
                                                     'Type your message here ...',
                                                 hintStyle: TextStyle(
-                                                    fontWeight: FontWeight.bold)),
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ),
                                         ),
                                       ),
@@ -151,7 +168,8 @@ class MessagesScreen extends StatelessWidget {
                                               } else {
                                                 cubit.addMessage(
                                                     context: context,
-                                                    receiverModel: receiverModel,
+                                                    receiverModel:
+                                                        widget.receiverModel,
                                                     messageController:
                                                         messageController);
                                               }
@@ -168,8 +186,9 @@ class MessagesScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                      ),
-                      fallback: (context) => const Expanded(child: DefaultCommentShimmerItem()))
+                          ),
+                      fallback: (context) =>
+                          const Expanded(child: DefaultCommentShimmerItem()))
                 ],
               ),
             ),

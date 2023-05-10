@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:social_app/data/models/message_model.dart';
@@ -26,10 +27,9 @@ class MessagesCubit extends Cubit<MessagesStates> {
     emit(MessagesAddLoadingState());
     AddMessage.getInstance().addMessage(
         receiverModel: receiverModel,
+        messageId: (messages.length + 1).toString(),
         messageText: messageController.text,
         onSuccessListen: (value) {
-          defaultSuccessSnackBar(
-              title: 'Add Message', message: 'Message has been sent');
           messageController.text = '';
           progressDialog.hide();
           emit(MessagesAddSuccessState());
@@ -44,16 +44,45 @@ class MessagesCubit extends Cubit<MessagesStates> {
   }
 
   List<MessageModel> messages = [];
+  List<int> messageIds = [];
 
-  getMessages({required UserModel receiverModel}) {
+  getMessages({
+    required UserModel receiverModel,
+    required scrollController,
+  }) {
     emit(MessagesGetLoadingState());
     GetMessages.getInstance().getMessages(
         onGetSuccessListen: (messageModels) {
-          messages = messageModels;
+          messageIds = [];
+          messages = [];
+          for (var element in messageModels) {
+            messageIds.add(int.parse(element.messageId ?? ''));
+          }
+          messageIds.sort();
+          for (var messageId in messageIds) {
+            messageModels
+                .where((element) => element.messageId == messageId.toString())
+                .forEach((element) {
+              messages.add(element);
+              if (!isClosed) {
+                emit(MessagesGetSuccessState());
+              }
+            });
+          }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              if (scrollController.hasClients) {
+                scrollController.animateTo(scrollController.position.maxScrollExtent,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut);
+              }
+            });
+          });
           if (!isClosed) {
             emit(MessagesGetSuccessState());
           }
         },
         receiverModel: receiverModel);
+
   }
 }
