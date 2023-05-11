@@ -13,3 +13,9 @@ class MessagesAddErrorState extends MessagesStates {}
 class MessagesGetLoadingState extends MessagesStates {}
 
 class MessagesGetSuccessState extends MessagesStates {}
+
+class MessagesDeleteLoadingState extends MessagesStates {}
+
+class MessagesDeleteSuccessState extends MessagesStates {}
+
+class MessagesDeleteErrorState extends MessagesStates {}

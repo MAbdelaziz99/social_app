@@ -115,9 +115,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                           var message = cubit.messages[index];
                                           if (message.senderId ==
                                               userModel?.uid) {
-                                            return buildMyMessage(message);
+                                            return buildMyMessage(
+                                                context, message, cubit);
                                           }
-                                          return buildMessage(message);
+                                          return buildMessage(
+                                              context, message, cubit);
                                         },
                                         separatorBuilder: (context, index) =>
                                             SizedBox(
@@ -144,6 +146,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                               .r,
                                           child: TextFormField(
                                             controller: messageController,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLines: null,
                                             decoration: const InputDecoration(
                                                 border: InputBorder.none,
                                                 hintText:
@@ -198,45 +203,61 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-  buildMessage(MessageModel messageModel) => Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.0.r, horizontal: 20.0.r),
-          decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadiusDirectional.only(
-                topEnd: Radius.circular(10.0.r),
-                topStart: Radius.circular(10.0.r),
-                bottomEnd: Radius.circular(10.0.r),
-              )),
-          child: Text(
-            messageModel.messageText ?? '',
-            style: TextStyle(
-              fontSize: 16.0.sp,
-              color: Colors.black,
-              overflow: TextOverflow.visible,
+  buildMessage(context, MessageModel messageModel, MessagesCubit cubit) =>
+      InkWell(
+        onLongPress: () => cubit.showMessageDeleteDialog(
+            context: context,
+            receiverId: messageModel.receiverId,
+            messageId: messageModel.messageId),
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Container(
+            width: 3 / 4 * MediaQuery.of(context).size.width,
+            padding: EdgeInsets.symmetric(vertical: 10.0.r, horizontal: 20.0.r),
+            decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadiusDirectional.only(
+                  topEnd: Radius.circular(10.0.r),
+                  topStart: Radius.circular(10.0.r),
+                  bottomEnd: Radius.circular(10.0.r),
+                )),
+            child: Text(
+              messageModel.messageText ?? '',
+              style: TextStyle(
+                fontSize: 16.0.sp,
+                color: Colors.black,
+                overflow: TextOverflow.visible,
+              ),
             ),
           ),
         ),
       );
 
-  buildMyMessage(MessageModel messageModel) => Align(
-        alignment: AlignmentDirectional.centerEnd,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.0.r, horizontal: 20.0.r),
-          decoration: BoxDecoration(
-              color: blueColor.withOpacity(0.4),
-              borderRadius: BorderRadiusDirectional.only(
-                topEnd: Radius.circular(10.0.r),
-                topStart: Radius.circular(10.0.r),
-                bottomStart: Radius.circular(10.0.r),
-              )),
-          child: Text(
-            messageModel.messageText ?? '',
-            style: TextStyle(
-              fontSize: 16.0.sp,
-              color: Colors.black,
-              overflow: TextOverflow.visible,
+  buildMyMessage(context, MessageModel messageModel, MessagesCubit cubit) =>
+      InkWell(
+        onLongPress: () => cubit.showMessageDeleteDialog(
+            context: context,
+            receiverId: messageModel.receiverId,
+            messageId: messageModel.messageId),
+        child: Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: Container(
+            width: 3 / 4 * MediaQuery.of(context).size.width,
+            padding: EdgeInsets.symmetric(vertical: 10.0.r, horizontal: 20.0.r),
+            decoration: BoxDecoration(
+                color: blueColor.withOpacity(0.4),
+                borderRadius: BorderRadiusDirectional.only(
+                  topEnd: Radius.circular(10.0.r),
+                  topStart: Radius.circular(10.0.r),
+                  bottomStart: Radius.circular(10.0.r),
+                )),
+            child: Text(
+              messageModel.messageText ?? '',
+              style: TextStyle(
+                fontSize: 16.0.sp,
+                color: Colors.black,
+                overflow: TextOverflow.visible,
+              ),
             ),
           ),
         ),

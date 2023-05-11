@@ -14,7 +14,7 @@ class AddMessage {
       required Function(dynamic) onSuccessListen,
       required Function(dynamic) onErrorListen}) {
     var sdf = DateFormat("yyyy-MM-dd HH:mm");
-    final String messageTime = DateTime.now().toString();
+    final String messageTime = sdf.format(DateTime.now());
 
     MessageModel messageModel = MessageModel(
         messageId: messageId,
@@ -29,7 +29,8 @@ class AddMessage {
         .collection('chats')
         .doc(receiverModel.uid)
         .collection('messages')
-        .add(messageModel.toMap())
+        .doc(messageId)
+        .set(messageModel.toMap())
         .then((value) {
       FirebaseFirestore.instance
           .collection('users')
@@ -37,7 +38,8 @@ class AddMessage {
           .collection('chats')
           .doc(userModel?.uid)
           .collection('messages')
-          .add(messageModel.toMap())
+          .doc(messageId)
+          .set(messageModel.toMap())
           .then(onSuccessListen)
           .catchError(onErrorListen);
     });
