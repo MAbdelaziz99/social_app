@@ -8,7 +8,6 @@ import 'package:social_app/data/models/message_model.dart';
 import 'package:social_app/presentation/messages/firebase/add_message.dart';
 import 'package:social_app/presentation/messages/firebase/delete_message.dart';
 import 'package:social_app/presentation/messages/firebase/get_messages.dart';
-import 'package:social_app/shared/components/material_button.dart';
 import 'package:social_app/shared/components/snackbar.dart';
 import 'package:social_app/shared/style/colors.dart';
 import '../../../data/models/user_model.dart';
