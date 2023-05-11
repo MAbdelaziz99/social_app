@@ -10,6 +10,7 @@ defaultSuccessSnackBar({required String title, required String message}) {
     message,
     colorText: Colors.white,
     snackPosition: SnackPosition.BOTTOM,
+    duration: const Duration(milliseconds: 1500),
     backgroundColor: greenColor,
   );
 }
@@ -20,6 +21,7 @@ defaultErrorSnackBar({required String title, required String message}) {
     message,
     colorText: Colors.white,
     snackPosition: SnackPosition.BOTTOM,
+    duration: const Duration(milliseconds: 1500),
     backgroundColor: redColor,
   );
 }

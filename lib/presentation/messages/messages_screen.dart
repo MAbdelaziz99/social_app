@@ -7,6 +7,7 @@ import 'package:social_app/data/app_data/user_data.dart';
 import 'package:social_app/data/models/message_model.dart';
 import 'package:social_app/data/models/user_model.dart';
 import 'package:social_app/presentation/messages/cubit/messages_cubit.dart';
+import 'package:social_app/shared/components/default_sent_text.dart';
 import 'package:social_app/shared/components/divider.dart';
 import 'package:social_app/shared/components/shimmer/comment_shimmer_item.dart';
 import 'package:social_app/shared/components/snackbar.dart';
@@ -129,65 +130,22 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 SizedBox(
                                   height: 10.0.h,
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey[300]!, width: 1.0.w),
-                                    borderRadius: BorderRadius.circular(10.0.r),
-                                  ),
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                                  horizontal: 10.0)
-                                              .r,
-                                          child: TextFormField(
-                                            controller: messageController,
-                                            keyboardType:
-                                                TextInputType.multiline,
-                                            maxLines: null,
-                                            decoration: const InputDecoration(
-                                                border: InputBorder.none,
-                                                hintText:
-                                                    'Type your message here ...',
-                                                hintStyle: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 40.0.h,
-                                        color: blueColor,
-                                        child: MaterialButton(
-                                            onPressed: () {
-                                              if (messageController
-                                                  .text.isEmpty) {
-                                                defaultErrorSnackBar(
-                                                    title: 'Add a message',
-                                                    message:
-                                                        'Please type a message');
-                                              } else {
-                                                cubit.addMessage(
-                                                    context: context,
-                                                    receiverModel:
-                                                        widget.receiverModel,
-                                                    messageController:
-                                                        messageController);
-                                              }
-                                            },
-                                            minWidth: 1.0,
-                                            child: Icon(
-                                              Icons.send,
-                                              color: Colors.white,
-                                              size: 16.0.r,
-                                            )),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                DefaultSentText(
+                                    controller: messageController,
+                                    onPressedButton: () {
+                                      if (messageController.text.isEmpty) {
+                                        defaultErrorSnackBar(
+                                            title: 'Add a message',
+                                            message: 'Please type a message');
+                                      } else {
+                                        cubit.addMessage(
+                                            context: context,
+                                            receiverModel: widget.receiverModel,
+                                            messageController:
+                                                messageController);
+                                      }
+                                    },
+                                    hintText: 'Type your message ...'),
                               ],
                             ),
                           ),
@@ -205,9 +163,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   buildMessage(context, MessageModel messageModel, MessagesCubit cubit) =>
       InkWell(
         onLongPress: () => cubit.showMessageDeleteDialog(
-            context: context,
-            receiverId: messageModel.receiverId,
-            messageId: messageModel.messageId),
+            context: context, messageModel: messageModel),
         child: Align(
           alignment: AlignmentDirectional.centerStart,
           child: Container(
@@ -235,9 +191,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   buildMyMessage(context, MessageModel messageModel, MessagesCubit cubit) =>
       InkWell(
         onLongPress: () => cubit.showMessageDeleteDialog(
-            context: context,
-            receiverId: messageModel.receiverId,
-            messageId: messageModel.messageId),
+            context: context, messageModel: messageModel),
         child: Align(
           alignment: AlignmentDirectional.centerEnd,
           child: Container(

@@ -1,15 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:social_app/data/models/message_model.dart';
 import 'package:social_app/presentation/messages/firebase/add_message.dart';
 import 'package:social_app/presentation/messages/firebase/delete_message.dart';
 import 'package:social_app/presentation/messages/firebase/get_messages.dart';
+import 'package:social_app/shared/components/default_alert_dialog.dart';
 import 'package:social_app/shared/components/snackbar.dart';
-import 'package:social_app/shared/style/colors.dart';
 import '../../../data/models/user_model.dart';
 import '../../../shared/components/progress_sialog.dart';
 
@@ -31,7 +30,6 @@ class MessagesCubit extends Cubit<MessagesStates> {
     emit(MessagesAddLoadingState());
     AddMessage.getInstance().addMessage(
         receiverModel: receiverModel,
-        messageId: (messages.length + 1).toString(),
         messageText: messageController.text,
         onSuccessListen: (value) {
           messageController.text = '';
@@ -73,16 +71,7 @@ class MessagesCubit extends Cubit<MessagesStates> {
               }
             });
           }
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-              if (scrollController.hasClients) {
-                scrollController.animateTo(
-                    scrollController.position.maxScrollExtent,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut);
-              }
-            });
-          });
+          animateToLastItemInMessagesList(scrollController: scrollController);
           if (!isClosed) {
             emit(MessagesGetSuccessState());
           }
@@ -110,80 +99,45 @@ class MessagesCubit extends Cubit<MessagesStates> {
   }
 
   showMessageDeleteDialog(
-      {required context, required receiverId, required messageId}) {
+      {required context, required MessageModel messageModel}) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        contentPadding:
-            EdgeInsets.symmetric(horizontal: 10.0.r, vertical: 5.0.r),
-        buttonPadding: EdgeInsets.zero,
-        actionsPadding: EdgeInsets.all(5.0.r),
-        iconPadding: EdgeInsets.zero,
-        titlePadding: EdgeInsets.zero,
-        title: Container(
-          color: Colors.blue,
-          padding: EdgeInsets.symmetric(horizontal: 5.0.r),
-          height: 20.0.h,
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(
-              'Delete a message',
-              style: TextStyle(
-                fontSize: 16.0.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Are you want to delete message ?',
-              style: TextStyle(
-                  fontSize: 14.0.sp,
-                  color: blueColor,
-                  fontWeight: FontWeight.bold,
-                  overflow: TextOverflow.visible),
-            ),
-            SizedBox(
-              height: 10.0.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 30.0.h,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(8.0.r),
-                    ),
-                    child: MaterialButton(
-                      onPressed: () {
-                        deleteMessage(
-                            context: context,
-                            receiverId: receiverId,
-                            messageId: messageId);
-                      },
-                      child: Text(
-                        'Delete message',
-                        style: TextStyle(
-                          fontSize: 16.0.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+      builder: (context) => DefaultAlertDialog(
+          titleText: 'Choose an option',
+          messageText: 'Are you want to delete  or copy message ?',
+          button1Text: 'Delete message',
+          button2Text: 'Copy message',
+          onPressed1: () {
+            deleteMessage(
+                context: context,
+                receiverId: messageModel.receiverId,
+                messageId: messageModel.messageId);
+          },
+          onPressed2: () {
+            copyMessage(
+                context: context, messageText: messageModel.messageText);
+          }),
     );
+  }
+
+  copyMessage({required context, required messageText}) {
+    Clipboard.setData(ClipboardData(text: messageText)).then((value) {
+      defaultSuccessSnackBar(
+          title: 'Message coping', message: 'The message is copied');
+      Navigator.pop(context);
+    });
+  }
+
+  animateToLastItemInMessagesList({required scrollController}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+      });
+    });
   }
 }
